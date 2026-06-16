@@ -136,6 +136,21 @@ checkpoints/
     ...
 ```
 
+`data/cache/hand_cognition/` 下的 hand-cognition cache 同样是推理、可视化和训练所必需的文件。它们是从 URDF visual mesh 和 synergy PCA 文件生成出来的小型派生资产，不是模型权重。每个
+`*_pts1024_syn4_scale10_v2.pt` 文件中保存了 topology-aware node features、adjacency、采样得到的 canonical hand/gripper cloud 和 synergy statistics。
+
+发布包已经包含这些 cache 文件。如需检查或补齐缺失文件，可以运行：
+
+```bash
+python tools/build_hand_cognition_cache.py --grippers all
+```
+
+如果修改了某个手/夹爪的 URDF、mesh 或 synergy 文件，可以重新生成对应 cache：
+
+```bash
+python tools/build_hand_cognition_cache.py --grippers Allegro franka_panda --rebuild
+```
+
 ## 快速开始
 
 使用内置 bowl 点云运行 checkpoint 推理：

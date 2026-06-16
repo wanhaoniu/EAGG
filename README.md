@@ -157,6 +157,26 @@ checkpoints/
     ...
 ```
 
+The hand-cognition cache files under `data/cache/hand_cognition/` are also
+required by inference, visualization, and training. They are small derived
+assets, not learned model weights. Each file named
+`*_pts1024_syn4_scale10_v2.pt` stores topology-aware node features, adjacency,
+the sampled canonical hand/gripper cloud, and synergy statistics generated from
+the corresponding URDF visual meshes and synergy PCA file.
+
+The release includes these cache files. To verify them or build any missing
+ones, run:
+
+```bash
+python tools/build_hand_cognition_cache.py --grippers all
+```
+
+If you edit a URDF, mesh, or synergy file, rebuild the affected cache:
+
+```bash
+python tools/build_hand_cognition_cache.py --grippers Allegro franka_panda --rebuild
+```
+
 ## Quick Start
 
 Run checkpoint inference on the bundled bowl point cloud:

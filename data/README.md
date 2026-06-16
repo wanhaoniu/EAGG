@@ -1,8 +1,17 @@
 # Data Layout
 
-The hand-cognition cache is stored under `data/cache/hand_cognition/`. Place
-the MGG grasp data and object models in the following layout before running the
-training script:
+The hand-cognition cache is stored under `data/cache/hand_cognition/`. The
+`*_pts1024_syn4_scale10_v2.pt` files are required by inference, visualization,
+and training; they are derived from the bundled URDF visual meshes and synergy
+PCA files. The release includes them, but missing or edited caches can be
+rebuilt from the repository root with:
+
+```bash
+python tools/build_hand_cognition_cache.py --grippers all
+```
+
+Place the MGG grasp data and object models in the following layout before
+running the training script:
 
 ```text
 EAGG_open_source/
