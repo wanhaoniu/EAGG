@@ -399,7 +399,7 @@ If you find EAGG useful, please cite the arXiv paper:
 ```bibtex
 @misc{niu2026eagg,
   title = {EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning},
-  author = {Niu, Wanhao and Sun, Hao and Rong, Yongfeng and Zhu, Zifan and Xie, Yuanyan and Zhou, Huaidong and Zhuang, Chungang and Sun, Fuchun},
+  author = {Niu, Wanhao and Ke, Qiyan and Sun, Yuan and Sun, Hao and Xu, Jie and Ma, Muyuan and Hu, Ruiqi and Sun, Fuchun},
   year = {2026},
   eprint = {arXiv:XXXX.XXXXX},
   archivePrefix = {arXiv},
