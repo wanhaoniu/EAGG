@@ -28,7 +28,7 @@ end-effector structure.
 </div>
 
 <p align="center">
-  <img src="assets/figures/Fig1_new.jpg" width="560" alt="EAGG paper teaser">
+  <img src="assets/figures/Fig1_readme.jpg" width="560" alt="EAGG paper teaser">
 </p>
 
 ## Core Idea
@@ -62,7 +62,7 @@ per-gripper model weights are distributed as a separate checkpoint archive.
 ## Method Overview
 
 <p align="center">
-  <img src="assets/figures/Fig2_new.jpg" width="760" alt="EAGG method overview">
+  <img src="assets/figures/Fig2_readme.jpg" width="760" alt="EAGG method overview">
 </p>
 
 The paper figures used in this README are stored under `assets/figures/`.
@@ -85,8 +85,8 @@ Recommended environment:
 | Memory | 8 GB or more system memory for inference demos |
 | Rendering | Matplotlib Agg backend, no display server required |
 
-Main Python packages: `torch`, `numpy`, `scipy`, `matplotlib`, `trimesh`,
-`urdfpy`, `networkx`, `scikit-learn`, and `tqdm`.
+Main Python packages: `torch`, `numpy`, `scipy`, `matplotlib`, `pillow`,
+`trimesh`, `urdfpy`, `networkx`, `scikit-learn`, and `tqdm`.
 
 Start from the release directory:
 
@@ -357,8 +357,8 @@ This command runs checkpoint inference, selects the strongest candidates for
 each evaluated object/end-effector pair, saves the top-3 renderings, and writes:
 
 ```text
-assets/figures/readme_allegro_cross_object.png
-assets/figures/readme_mug_cross_gripper.png
+assets/figures/readme_allegro_cross_object_preview.jpg
+assets/figures/readme_mug_cross_gripper_preview.jpg
 outputs/readme_figures/generation_summary.json
 ```
 
@@ -371,7 +371,7 @@ same end effector is applied to all seven bundled clean objects, and each panel
 overlays the object mesh with a selected generated grasp.
 
 <p align="center">
-  <img src="assets/figures/readme_allegro_cross_object.png" width="700" alt="Allegro grasp generalization across objects">
+  <img src="assets/figures/readme_allegro_cross_object_preview.jpg" width="700" alt="Allegro grasp generalization across objects">
 </p>
 
 The second gallery shows end-effector-level generalization on the mug object.
@@ -379,7 +379,7 @@ The object is fixed while the selected generated grasp is rendered for every
 released hand or gripper.
 
 <p align="center">
-  <img src="assets/figures/readme_mug_cross_gripper.png" width="700" alt="Mug grasp generalization across end effectors">
+  <img src="assets/figures/readme_mug_cross_gripper_preview.jpg" width="700" alt="Mug grasp generalization across end effectors">
 </p>
 
 Use `--objects` to change the object set in the Allegro cross-object gallery,

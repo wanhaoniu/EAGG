@@ -31,6 +31,7 @@ matplotlib.use("Agg")
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 
 DEFAULT_OBJECTS = [
@@ -201,6 +202,16 @@ def save_montage(items: List[Tuple[str, Path]], title: str, out_path: Path, cols
     print(f"[save] {rel(out_path)}")
 
 
+def save_preview_jpeg(src_path: Path, out_path: Path, max_width: int = 1000, quality: int = 86) -> None:
+    image = Image.open(src_path).convert("RGB")
+    if image.width > max_width:
+        height = max(1, round(image.height * max_width / image.width))
+        image = image.resize((max_width, height), Image.Resampling.LANCZOS)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(out_path, "JPEG", quality=quality, optimize=True, progressive=True)
+    print(f"[save] {rel(out_path)}")
+
+
 def read_result_json(path: Path) -> Dict:
     with path.open("r", encoding="utf-8") as f:
         data = json.load(f)
@@ -257,6 +268,9 @@ def main() -> None:
         dpi=args.dpi,
     )
     summary["figures"]["allegro_cross_object"] = rel(allegro_figure)
+    allegro_preview = figure_dir / "readme_allegro_cross_object_preview.jpg"
+    save_preview_jpeg(allegro_figure, allegro_preview)
+    summary["figures"]["allegro_cross_object_preview"] = rel(allegro_preview)
 
     mug_root = out_root / "mug_cross_gripper"
     run_gallery(args, grippers, args.mug_object, mug_root)
@@ -277,6 +291,9 @@ def main() -> None:
         dpi=args.dpi,
     )
     summary["figures"]["mug_cross_gripper"] = rel(mug_figure)
+    mug_preview = figure_dir / "readme_mug_cross_gripper_preview.jpg"
+    save_preview_jpeg(mug_figure, mug_preview)
+    summary["figures"]["mug_cross_gripper_preview"] = rel(mug_preview)
 
     summary_path = out_root / "generation_summary.json"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
