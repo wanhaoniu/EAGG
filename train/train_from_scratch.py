@@ -204,6 +204,20 @@ def pack_hand_graphs(graphs: Dict[int, Dict[str, torch.Tensor]], device: torch.d
 
 
 def build_model(cfg: Dict, device: torch.device) -> nn.Module:
+    hand_init = cfg.get("pretrained_hand_model_path")
+    if cfg.get("freeze_hand", True):
+        if not hand_init:
+            raise ValueError(
+                "Frozen hand-cognition backbone requires a checkpoint. "
+                "Pass --hand-init or pretrain one with train/pretrain_hand_cognition.py."
+            )
+        if not os.path.exists(hand_init):
+            raise FileNotFoundError(
+                f"Hand-cognition checkpoint not found: {hand_init}. "
+                "Download the released checkpoint archive or pass --hand-init "
+                "to a checkpoint trained by train/pretrain_hand_cognition.py."
+            )
+
     input_dim = cfg["synergy_dim"] + 3 + 6
     hand_feat_dim = 27 + 1 + cfg["synergy_dim"] + 1
     model = JGTModel(
@@ -213,7 +227,7 @@ def build_model(cfg: Dict, device: torch.device) -> nn.Module:
         depth=cfg["depth"],
         synergy_dim=cfg["synergy_dim"],
         hand_node_feat_dim=hand_feat_dim,
-        pretrained_hand_model_path=cfg.get("pretrained_hand_model_path"),
+        pretrained_hand_model_path=hand_init,
         freeze_hand=cfg.get("freeze_hand", True),
     ).to(device)
     if cfg.get("compile_model", False) and hasattr(torch, "compile"):

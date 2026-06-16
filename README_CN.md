@@ -194,7 +194,30 @@ python tools/infer_and_visualize.py \
 
 ## 从头训练
 
-训练入口期望使用 MultiGripperGrasp (MGG) 数据集格式，并复用发布包内的 synergy 文件和 hand-cognition cache。默认模型规模为：4 维低维控制码、1024 个物体点、256 hidden dimension、8 个 attention heads、8 个 transformer blocks、batch size 420、学习率 `2e-4`、训练 10 个 epoch。
+训练入口期望使用 MultiGripperGrasp (MGG) 数据集格式，并复用发布包内的 synergy 文件和 hand-cognition cache。EAGG generator 训练时使用冻结的 hand-cognition backbone；发布的 checkpoint 压缩包中已经包含对应权重 `checkpoints/final/eagg_hand_cognition.pth`，`train/train_from_scratch.py` 默认会加载它。
+
+如果希望先自行训练 hand-cognition backbone，可以运行：
+
+```bash
+python train/pretrain_hand_cognition.py \
+  --grippers all \
+  --epochs 300 \
+  --batch-size 1024 \
+  --samples-per-epoch 100000 \
+  --device cuda \
+  --out-dir checkpoints/training_runs/hand_cognition
+```
+
+脚本输出：
+
+```text
+checkpoints/training_runs/hand_cognition/
+  latest_checkpoint.pth
+  eagg_hand_cognition_best.pth
+  eagg_hand_cognition_final.pth
+```
+
+后续训练 generator 时，可以通过 `--hand-init` 指定该 backbone checkpoint。默认模型规模为：4 维低维控制码、1024 个物体点、256 hidden dimension、8 个 attention heads、8 个 transformer blocks、batch size 420、学习率 `2e-4`、训练 10 个 epoch。
 
 完整训练示例：
 
@@ -206,6 +229,7 @@ python train/train_from_scratch.py \
   --batch-size 420 \
   --lr 2e-4 \
   --device cuda \
+  --hand-init checkpoints/final/eagg_hand_cognition.pth \
   --out-dir checkpoints/training_runs/eagg_full
 ```
 

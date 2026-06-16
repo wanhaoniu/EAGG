@@ -223,10 +223,37 @@ decoded joint/control vector for the selected hand or gripper.
 ## Training From Scratch
 
 The training entry point expects the MultiGripperGrasp (MGG) dataset format and
-uses the included synergy files and hand-cognition cache. The default model
-scale uses a 4-dimensional control code, 1024 object points, 256 hidden
-dimension, 8 attention heads, 8 transformer blocks, batch size 420, learning
-rate `2e-4`, and 10 epochs.
+uses the included synergy files and hand-cognition cache. EAGG generator
+training uses a frozen hand-cognition backbone; the released checkpoint archive
+includes the required backbone weight at
+`checkpoints/final/eagg_hand_cognition.pth`, and
+`train/train_from_scratch.py` loads it by default.
+
+To train the hand-cognition backbone yourself before generator training:
+
+```bash
+python train/pretrain_hand_cognition.py \
+  --grippers all \
+  --epochs 300 \
+  --batch-size 1024 \
+  --samples-per-epoch 100000 \
+  --device cuda \
+  --out-dir checkpoints/training_runs/hand_cognition
+```
+
+The script writes:
+
+```text
+checkpoints/training_runs/hand_cognition/
+  latest_checkpoint.pth
+  eagg_hand_cognition_best.pth
+  eagg_hand_cognition_final.pth
+```
+
+Pass the resulting backbone checkpoint to generator training with `--hand-init`.
+The default model scale uses a 4-dimensional control code, 1024 object points,
+256 hidden dimension, 8 attention heads, 8 transformer blocks, batch size 420,
+learning rate `2e-4`, and 10 epochs.
 
 Full training example:
 
@@ -238,6 +265,7 @@ python train/train_from_scratch.py \
   --batch-size 420 \
   --lr 2e-4 \
   --device cuda \
+  --hand-init checkpoints/final/eagg_hand_cognition.pth \
   --out-dir checkpoints/training_runs/eagg_full
 ```
 
