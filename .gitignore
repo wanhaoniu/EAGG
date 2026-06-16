@@ -4,6 +4,7 @@ __pycache__/
 .cache/
 outputs/
 data/cache/mgg_dataset_*.pt
+data/cache/mgg_gripper_stats.pt
 checkpoints/training_runs/
 EAGG_checkpoints.zip
 checkpoints/final/*.pth

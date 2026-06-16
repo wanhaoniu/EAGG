@@ -20,7 +20,10 @@ from typing import Dict, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.cuda.amp import GradScaler
+try:
+    from torch.amp import GradScaler
+except ImportError:  # pragma: no cover - compatibility with older PyTorch
+    from torch.cuda.amp import GradScaler
 from torch.utils.data import DataLoader, Subset, random_split
 from tqdm import tqdm
 
@@ -49,7 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--hand-init", default=None, help="Hand-cognition checkpoint path.")
     parser.add_argument("--no-amp", action="store_true", help="Disable automatic mixed precision.")
     parser.add_argument("--compile", action="store_true", help="Enable torch.compile when available.")
-    parser.add_argument("--debug", action="store_true", help="Use a reduced subset for a quick smoke test.")
+    parser.add_argument("--smoke-test", action="store_true", help="Use a reduced subset for a quick smoke test.")
     return parser.parse_args()
 
 
@@ -77,7 +80,7 @@ def make_config(args: argparse.Namespace) -> Dict:
         cfg["pretrained_hand_model_path"] = args.hand_init
     cfg["use_amp"] = bool(cfg.get("use_amp", True) and not args.no_amp)
     cfg["compile_model"] = bool(cfg.get("compile_model", False) or args.compile)
-    cfg["debug_mode"] = bool(args.debug)
+    cfg["smoke_test"] = bool(args.smoke_test)
     cfg["ckpt_dir"] = args.out_dir
     return cfg
 
@@ -133,7 +136,7 @@ def build_dataset(cfg: Dict) -> Tuple[torch.utils.data.Dataset, torch.utils.data
             "--train-grippers, and --train-objects."
         )
 
-    if cfg.get("debug_mode", False):
+    if cfg.get("smoke_test", False):
         keep = max(1, min(len(full), int(len(full) * 0.02)))
         full = Subset(full, list(range(keep)))
 
@@ -415,7 +418,10 @@ def main() -> None:
     )
 
     use_amp = bool(cfg.get("use_amp", True) and device.type == "cuda")
-    scaler = GradScaler(enabled=use_amp)
+    try:
+        scaler = GradScaler(device.type, enabled=use_amp)
+    except TypeError:
+        scaler = GradScaler(enabled=use_amp)
     decay = 0.8
     synergy_weights = torch.tensor(
         [decay**i for i in range(cfg["synergy_dim"])],
