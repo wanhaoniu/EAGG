@@ -1,0 +1,10 @@
+numpy>=1.23
+scipy>=1.9
+torch>=2.0
+tqdm>=4.64
+matplotlib>=3.6
+trimesh>=3.22
+networkx>=2.8
+urdfpy>=0.0.22
+scikit-learn>=1.1
+

@@ -1,0 +1,43 @@
+{
+    "gripper_name": "Barrett",
+    "sim_dof_names": [
+        "a_palm_link1_joint",
+        "b_palm_link1_joint",
+        "c_palm_link2_joint_0",
+        "a_link1_link2_joint",
+        "b_link1_link2_joint",
+        "c_link2_link3_joint",
+        "a_link2_link3_joint",
+        "b_link2_link3_joint"
+    ],
+    "urdf_actuated_names": [
+        "a_palm_link1_joint",
+        "b_palm_link1_joint",
+        "c_palm_link2_joint_0",
+        "a_link1_link2_joint",
+        "b_link1_link2_joint",
+        "c_link2_link3_joint",
+        "a_link2_link3_joint",
+        "b_link2_link3_joint"
+    ],
+    "usd_to_urdf_index": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ],
+    "urdf_to_usd_index": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "gripper_name": "jaco_robot",
+    "sim_dof_names": [
+        "jaco_finger_joint_0",
+        "jaco_finger_joint_2",
+        "jaco_finger_joint_4"
+    ],
+    "urdf_actuated_names": [
+        "jaco_finger_joint_0",
+        "jaco_finger_joint_2",
+        "jaco_finger_joint_4"
+    ],
+    "usd_to_urdf_index": [
+        0,
+        1,
+        2
+    ],
+    "urdf_to_usd_index": [
+        0,
+        1,
+        2
+    ]
+}

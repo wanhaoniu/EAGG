@@ -1,0 +1,55 @@
+{
+    "gripper_name": "robotiq_3finger",
+    "sim_dof_names": [
+        "RIQ_palm_RIQ_link_0_joint",
+        "RIQ_palm_RIQ_link_0_joint_b",
+        "RIQ_palm_RIQ_link_1_joint_a",
+        "RIQ_link_0_RIQ_link_1_joint_c",
+        "RIQ_link_0_RIQ_link_1_joint_b",
+        "RIQ_link_1_RIQ_link_2_joint_a",
+        "RIQ_link_1_RIQ_link_2_joint_c",
+        "RIQ_link_1_RIQ_link_2_joint_b",
+        "RIQ_link_2_RIQ_link_3_joint_a",
+        "RIQ_link_2_RIQ_link_3_joint_c",
+        "RIQ_link_2_RIQ_link_3_joint_b"
+    ],
+    "urdf_actuated_names": [
+        "RIQ_palm_RIQ_link_1_joint_a",
+        "RIQ_palm_RIQ_link_0_joint_b",
+        "RIQ_palm_RIQ_link_0_joint",
+        "RIQ_link_1_RIQ_link_2_joint_a",
+        "RIQ_link_0_RIQ_link_1_joint_b",
+        "RIQ_link_0_RIQ_link_1_joint_c",
+        "RIQ_link_2_RIQ_link_3_joint_a",
+        "RIQ_link_1_RIQ_link_2_joint_b",
+        "RIQ_link_1_RIQ_link_2_joint_c",
+        "RIQ_link_2_RIQ_link_3_joint_b",
+        "RIQ_link_2_RIQ_link_3_joint_c"
+    ],
+    "usd_to_urdf_index": [
+        2,
+        1,
+        0,
+        5,
+        4,
+        3,
+        8,
+        7,
+        6,
+        10,
+        9
+    ],
+    "urdf_to_usd_index": [
+        2,
+        1,
+        0,
+        5,
+        4,
+        3,
+        8,
+        7,
+        6,
+        10,
+        9
+    ]
+}

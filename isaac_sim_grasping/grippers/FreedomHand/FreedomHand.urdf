@@ -1,0 +1,1214 @@
+
+<robot
+  name="freedom_left_hand">
+  
+  <material name="DarkGraphite">
+    <color rgba="0.039 0.047 0.063 1.0"/>
+  </material>
+
+  <material name="StoneGray">
+    <color rgba="0.180 0.231 0.306 1.0"/>
+  </material>
+
+  <material name="LightSilver">
+    <color rgba="0.722 0.761 0.800 1.0"/>
+  </material>
+
+  <material name="LightSilverGreen">
+    <color rgba="0.782 0.761 0.780 1.0"/>
+  </material>
+
+  <material name="DeepTechBlue">
+    <color rgba="0.702 0.761 0.820 1.0"/>
+  </material>
+  
+  <link
+    name="base_world">
+    <inertial>
+      <origin
+        xyz="1.72456640981644E-10 0.000159743547726118 0.00658240409197629"
+        rpy="0 0 0" />
+      <mass
+        value="0.0176998254464378" />
+      <inertia
+        ixx="4.77814014865034E-06"
+        ixy="-2.82870930251957E-15"
+        ixz="-1.75792865858176E-14"
+        iyy="4.84927762663746E-06"
+        iyz="4.47414433687867E-09"
+        izz="9.23717647630549E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/base_world.STL" />
+      </geometry>
+      <material name="DarkGraphite"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/base_world.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="l_p_link1">
+    <inertial>
+      <origin
+        xyz="-0.000806915097913388 0.00388610492410939 0.0525721443149127"
+        rpy="0 0 0" />
+      <mass
+        value="3.09350498276967" />
+      <inertia
+        ixx="0.00483124658716066"
+        ixy="-0.000120079243986953"
+        ixz="2.76998390224128E-05"
+        iyy="0.00363360625607334"
+        iyz="0.000130624066350774"
+        izz="0.00244702121244642" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_p_link1.STL" />
+      </geometry>
+      <material name="DarkGraphite"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_p_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_p_joint1"
+    type="fixed">
+    <origin
+      xyz="0 0 0.009"
+      rpy="0 0 0" />
+    <parent
+      link="base_world" />
+    <child
+      link="l_p_link1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link1_1">
+    <inertial>
+      <origin
+        xyz="0.00145106596791297 0.000219748765094941 -0.00094878677214999"
+        rpy="0 0 0" />
+      <mass
+        value="0.022937939198734" />
+      <inertia
+        ixx="1.34683615212935E-06"
+        ixy="-2.07746757263643E-08"
+        ixz="7.89788135056471E-08"
+        iyy="1.55245542916721E-06"
+        iyz="2.67848642354461E-08"
+        izz="1.39334328734015E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_1.STL" />
+      </geometry>
+      <material name="StoneGray"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint_1"
+    type="revolute">
+    <origin
+      xyz="0.0019629 -0.02666 0.037173"
+      rpy="-1.571 0.029 0" />
+    <parent
+      link="l_p_link1" />
+    <child
+      link="l_f_link1_1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-0.4363"
+      upper="0.43663"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link1_2">
+    <inertial>
+      <origin
+        xyz="-0.0368460622630162 0.017183676037241 0.0161136820216997"
+        rpy="0 0 0" />
+      <mass
+        value="0.345446868480597" />
+      <inertia
+        ixx="8.74993953311003E-05"
+        ixy="2.80158941029215E-05"
+        ixz="4.42492535344589E-05"
+        iyy="0.000134460477920373"
+        iyz="-2.06512048636184E-05"
+        izz="0.00010376701557648" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_2.STL" />
+      </geometry>
+      <material name="LightSilver"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint1_2"
+    type="revolute">
+    <origin
+      xyz="0.010999 0 -0.001747"
+      rpy="-1.5711 0 -3.1415" />
+    <parent
+      link="l_f_link1_1" />
+    <child
+      link="l_f_link1_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.3786"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link1_3">
+    <inertial>
+      <origin
+        xyz="0.0131235626729575 -0.00699500868701408 -8.9237181345736E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.078728188790909" />
+      <inertia
+        ixx="4.50755666538291E-06"
+        ixy="-6.41444224863096E-07"
+        ixz="1.82882144130032E-11"
+        iyy="7.81737857211279E-06"
+        iyz="1.40812459242875E-10"
+        izz="7.87618818286551E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_3.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint1_3"
+    type="revolute">
+    <origin
+      xyz="-0.055719 0.025991 0.045109"
+      rpy="1.5705 -0.97818 2.705" />
+    <parent
+      link="l_f_link1_2" />
+    <child
+      link="l_f_link1_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.4537"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link1_4">
+    <inertial>
+      <origin
+        xyz="0.013033720128292 0.00392465793829972 4.5317859458105E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0492559673669118" />
+      <inertia
+        ixx="1.83221779789421E-06"
+        ixy="-2.9201248351923E-08"
+        ixz="-2.11636247722758E-11"
+        iyy="4.14827455404067E-06"
+        iyz="1.82172753188615E-12"
+        izz="3.86182594285045E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_4.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint1_4"
+    type="revolute">
+    <origin
+      xyz="0.030304 -0.0075957 0"
+      rpy="0 0 0.31426" />
+    <parent
+      link="l_f_link1_3" />
+    <child
+      link="l_f_link1_4" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.2564"
+      effort="10"
+      velocity="1.5" />
+    <!-- <mimic joint="l_f_joint1_3" multiplier="2.768" offset="0"/> -->
+  </joint>
+  <link
+    name="l_f_link1_pad">
+    <inertial>
+      <origin
+        xyz="1.66533453693773E-16 5.55111512312578E-17 -2.77555756156289E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.000748799999999945" />
+      <inertia
+        ixx="4.05599999999982E-09"
+        ixy="2.54358038360056E-22"
+        ixz="5.11818004017186E-23"
+        iyy="1.29791999999998E-08"
+        iyz="1.00709239578331E-22"
+        izz="9.04800000000008E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_pad.STL" />
+      </geometry>
+      <material name="DeepTechBlue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link1_pad.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint1_pad"
+    type="fixed">
+    <origin
+      xyz="0.02058 0.010335 0"
+      rpy="0 0 -0.36591" />
+    <parent
+      link="l_f_link1_4" />
+    <child
+      link="l_f_link1_pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link2_1">
+    <inertial>
+      <origin
+        xyz="0.00431549531692989 -3.59544548608464E-05 -0.000293519581500933"
+        rpy="0 0 0" />
+      <mass
+        value="0.01220067525638" />
+      <inertia
+        ixx="1.76157556392802E-07"
+        ixy="-1.18013880311547E-11"
+        ixz="5.1258189712677E-08"
+        iyy="6.86901221323969E-07"
+        iyz="-5.70496565074483E-13"
+        izz="6.04592917607103E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_1.STL" />
+      </geometry>
+      <material name="StoneGray"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint2_1"
+    type="revolute">
+    <origin
+      xyz="-0.0011606 -0.030771 0.11518"
+      rpy="-0.67227 -1.5707 -2.4693" />
+    <parent
+      link="l_p_link1" />
+    <child
+      link="l_f_link2_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.1745"
+      upper="0.1745"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link2_2">
+    <inertial>
+      <origin
+        xyz="0.0104118354940775 0.000536686610706071 -1.76713780573878E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0784310054996294" />
+      <inertia
+        ixx="3.68968904398342E-06"
+        ixy="3.62846908121159E-07"
+        ixz="2.16090077469993E-10"
+        iyy="1.11655087077363E-05"
+        iyz="-8.17126072188099E-11"
+        izz="1.1188037862303E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_2.STL" />
+      </geometry>
+      <material name="LightSilver"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint2_2"
+    type="revolute">
+    <origin
+      xyz="0.007 0 0.0021"
+      rpy="1.5708 0 0" />
+    <parent
+      link="l_f_link2_1" />
+    <child
+      link="l_f_link2_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.396"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link2_pad">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-16 3.81639164714898E-17 -5.20417042793042E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.000748799999999951" />
+      <inertia
+        ixx="4.05599999999972E-09"
+        ixy="-3.4638188150658E-24"
+        ixz="2.60044905071358E-23"
+        iyy="1.29791999999987E-08"
+        iyz="-9.92616735063633E-24"
+        izz="9.04799999999891E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_pad.STL" />
+      </geometry>
+      <material name="DeepTechBlue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_pad.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint2_pad"
+    type="fixed">
+    <origin
+      xyz="0.0431768806103101 0.00346826424137609 1.9226932202532E-05"
+      rpy="0 0 -0.24108798729853" />
+    <parent
+      link="l_f_link2_3" />
+    <child
+      link="l_f_link2_pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link2_3">
+    <inertial>
+      <origin
+        xyz="0.025404689382244 -0.00109883030595305 -1.01316054048955E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0416865010250188" />
+      <inertia
+        ixx="1.97988408622401E-06"
+        ixy="2.09083172696518E-06"
+        ixz="-5.69823390084998E-09"
+        iyy="1.00738033109099E-05"
+        iyz="1.73153963015829E-09"
+        izz="1.02474545462262E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_3.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link2_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint2_3"
+    type="revolute">
+    <origin
+      xyz="0.032003 -0.0025 0"
+      rpy="0 0 0.41015" />
+    <parent
+      link="l_f_link2_2" />
+    <child
+      link="l_f_link2_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.204"
+      effort="10"
+      velocity="1.5" />
+    <!-- <mimic joint="l_f_joint2_2" multiplier="0.925" offset="0"/> -->
+  </joint>
+  <link
+    name="l_f_link3_1">
+    <inertial>
+      <origin
+        xyz="0.00431549531692993 -3.59544548608516E-05 -0.000293519581500951"
+        rpy="0 0 0" />
+      <mass
+        value="0.01220067525638" />
+      <inertia
+        ixx="1.76157556392802E-07"
+        ixy="-1.18013880316022E-11"
+        ixz="5.12581897126789E-08"
+        iyy="6.86901221323972E-07"
+        iyz="-5.70496565180362E-13"
+        izz="6.04592917607106E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_1.STL" />
+      </geometry>
+      <material name="StoneGray"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint3_1"
+    type="revolute">
+    <origin
+      xyz="-0.0011607 -0.0087207 0.11685"
+      rpy="-0.67227 -1.5707 -2.4693" />
+    <parent
+      link="l_p_link1" />
+    <child
+      link="l_f_link3_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.1745"
+      upper="0.1745"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link3_2">
+    <inertial>
+      <origin
+        xyz="0.010411835494077 0.000536686610706187 -1.76713780653676E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0784310054996272" />
+      <inertia
+        ixx="3.68968904398335E-06"
+        ixy="3.62846908120986E-07"
+        ixz="2.16090077595063E-10"
+        iyy="1.11655087077355E-05"
+        iyz="-8.171260723448E-11"
+        izz="1.11880378623021E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_2.STL" />
+      </geometry>
+      <material name="LightSilver"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint3_2"
+    type="revolute">
+    <origin
+      xyz="0.007 0 0.0021"
+      rpy="1.5708 0 0" />
+    <parent
+      link="l_f_link3_1" />
+    <child
+      link="l_f_link3_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.396"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link3_3">
+    <inertial>
+      <origin
+        xyz="0.025404499507523 -0.0010985839475919 -1.00898087224272E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0416860671235266" />
+      <inertia
+        ixx="1.97985984534454E-06"
+        ixy="2.09080814722245E-06"
+        ixz="-5.67363921634989E-09"
+        iyy="1.00738960204226E-05"
+        iyz="1.70737051604018E-09"
+        izz="1.02474421944146E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_3.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint3_3"
+    type="revolute">
+    <origin
+      xyz="0.032003 -0.0025 0"
+      rpy="0 0 0.41015" />
+    <parent
+      link="l_f_link3_2" />
+    <child
+      link="l_f_link3_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.204"
+      effort="10"
+      velocity="1.5" />
+    <!-- <mimic joint="l_f_joint3_2" multiplier="0.925" offset="0"/> -->
+  </joint>
+  <link
+    name="l_f_link3_pad">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-16 3.81639164714898E-17 -6.93889390390723E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.000748799999999951" />
+      <inertia
+        ixx="4.05599999999973E-09"
+        ixy="8.28085341348008E-23"
+        ixz="2.83309359799412E-23"
+        iyy="1.29791999999991E-08"
+        iyz="-7.44462551297725E-24"
+        izz="9.04799999999938E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_pad.STL" />
+      </geometry>
+      <material name="DeepTechBlue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link3_pad.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint3_pad"
+    type="fixed">
+    <origin
+      xyz="0.043177 0.0034683 1.9227E-05"
+      rpy="0 0 -0.24109" />
+    <parent
+      link="l_f_link3_3" />
+    <child
+      link="l_f_link3_pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link4_1">
+    <inertial>
+      <origin
+        xyz="0.00431549531692992 -3.5954454860862E-05 -0.000293519581500961"
+        rpy="0 0 0" />
+      <mass
+        value="0.01220067525638" />
+      <inertia
+        ixx="1.76157556392802E-07"
+        ixy="-1.1801388031455E-11"
+        ixz="5.12581897126789E-08"
+        iyy="6.86901221323973E-07"
+        iyz="-5.70496565127423E-13"
+        izz="6.04592917607107E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_1.STL" />
+      </geometry>
+      <material name="StoneGray"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint4_1"
+    type="fixed">
+    <origin
+      xyz="-0.0011606 0.013279 0.11513"
+      rpy="-0.67227 -1.5707 -2.4693" />
+    <parent
+      link="l_p_link1" />
+    <child
+      link="l_f_link4_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link4_2">
+    <inertial>
+      <origin
+        xyz="0.0104118354940766 0.000536686610706234 -1.76713780851434E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0784310054996255" />
+      <inertia
+        ixx="3.68968904398328E-06"
+        ixy="3.62846908120933E-07"
+        ixz="2.16090077851184E-10"
+        iyy="1.11655087077349E-05"
+        iyz="-8.17126072539617E-11"
+        izz="1.11880378623016E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_2.STL" />
+      </geometry>
+      <material name="LightSilver"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint4_2"
+    type="revolute">
+    <origin
+      xyz="0.007 0 0.0021"
+      rpy="1.5708 0 0" />
+    <parent
+      link="l_f_link4_1" />
+    <child
+      link="l_f_link4_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.396"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link4_3">
+    <inertial>
+      <origin
+        xyz="0.0254046743167515 -0.00109882812208015 -1.01447539501975E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0416864446947444" />
+      <inertia
+        ixx="1.97987951771862E-06"
+        ixy="2.09083156270342E-06"
+        ixz="-5.69653236819275E-09"
+        iyy="1.00737985063769E-05"
+        iyz="1.72901452754347E-09"
+        izz="1.02474523549531E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_3.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint4_3"
+    type="revolute">
+    <origin
+      xyz="0.032003 -0.0025 0"
+      rpy="0 0 0.41015" />
+    <parent
+      link="l_f_link4_2" />
+    <child
+      link="l_f_link4_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.204"
+      effort="10"
+      velocity="1.5" />
+    <!-- <mimic joint="l_f_joint4_2" multiplier="0.925" offset="0"/> -->
+  </joint>
+  <link
+    name="l_f_link4_pad">
+    <inertial>
+      <origin
+        xyz="1.11022302462516E-16 4.5102810375397E-17 6.93889390390723E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.000748799999999948" />
+      <inertia
+        ixx="4.05599999999972E-09"
+        ixy="1.86516303433637E-22"
+        ixz="-2.79690444619492E-23"
+        iyy="1.29791999999999E-08"
+        iyz="1.65436122510606E-24"
+        izz="9.04800000000022E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_pad.STL" />
+      </geometry>
+      <material name="DeepTechBlue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link4_pad.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint4_pad"
+    type="fixed">
+    <origin
+      xyz="0.043177 0.0034683 1.9227E-05"
+      rpy="0 0 -0.24109" />
+    <parent
+      link="l_f_link4_3" />
+    <child
+      link="l_f_link4_pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link5_1">
+    <inertial>
+      <origin
+        xyz="0.0043154953169299 -3.59544548608343E-05 -0.00029351958150094"
+        rpy="0 0 0" />
+      <mass
+        value="0.01220067525638" />
+      <inertia
+        ixx="1.76157556392802E-07"
+        ixy="-1.18013880311382E-11"
+        ixz="5.12581897126776E-08"
+        iyy="6.86901221323969E-07"
+        iyz="-5.70496565127423E-13"
+        izz="6.04592917607103E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_1.STL" />
+      </geometry>
+      <material name="StoneGray"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint5_1"
+    type="fixed">
+    <origin
+      xyz="-0.0011601 0.035276 0.1069"
+      rpy="-0.67227 -1.5707 -2.4693" />
+    <parent
+      link="l_p_link1" />
+    <child
+      link="l_f_link5_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="l_f_link5_2">
+    <inertial>
+      <origin
+        xyz="0.0104118354940771 0.000536686610706119 -1.7671378069184E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0784310054996277" />
+      <inertia
+        ixx="3.68968904398335E-06"
+        ixy="3.628469081211E-07"
+        ixz="2.16090077583522E-10"
+        iyy="1.11655087077358E-05"
+        iyz="-8.17126072260097E-11"
+        izz="1.11880378623024E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_2.STL" />
+      </geometry>
+      <material name="LightSilver"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint5_2"
+    type="revolute">
+    <origin
+      xyz="0.007 0 0.0021"
+      rpy="1.5708 0 0" />
+    <parent
+      link="l_f_link5_1" />
+    <child
+      link="l_f_link5_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.396"
+      effort="10"
+      velocity="1.5" />
+  </joint>
+  <link
+    name="l_f_link5_3">
+    <inertial>
+      <origin
+        xyz="0.0254045502583316 -0.00109875956477253 -1.02524869180082E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0416862699520771" />
+      <inertia
+        ixx="1.9798564773289E-06"
+        ixy="2.09081669243835E-06"
+        ixz="-5.67528298552423E-09"
+        iyy="1.00738200708542E-05"
+        iyz="1.69867485826077E-09"
+        izz="1.02474541643006E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_3.STL" />
+      </geometry>
+      <material name="LightSilverGreen"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint5_3"
+    type="revolute">
+    <origin
+      xyz="0.032003 -0.0025 0"
+      rpy="0 0 0.41015" />
+    <parent
+      link="l_f_link5_2" />
+    <child
+      link="l_f_link5_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.204"
+      effort="10"
+      velocity="1.5" />
+    <!-- <mimic joint="l_f_joint5_2" multiplier="0.925" offset="0"/> -->
+  </joint>
+  <link
+    name="l_f_link5_pad">
+    <inertial>
+      <origin
+        xyz="8.32667268468867E-17 5.20417042793042E-17 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.000748799999999953" />
+      <inertia
+        ixx="4.05599999999977E-09"
+        ixy="1.89398510880501E-22"
+        ixz="3.02954899347546E-23"
+        iyy="1.29791999999999E-08"
+        iyz="-7.03103520670074E-24"
+        izz="9.04800000000019E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_pad.STL" />
+      </geometry>
+      <material name="DeepTechBlue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/freedom_left_hand/l_f_link5_pad.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_f_joint5_pad"
+    type="fixed">
+    <origin
+      xyz="0.043177 0.0034683 1.9227E-05"
+      rpy="0 0 -0.24109" />
+    <parent
+      link="l_f_link5_3" />
+    <child
+      link="l_f_link5_pad" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

@@ -1,0 +1,19 @@
+{
+    "gripper_name": "sawyer",
+    "sim_dof_names": [
+        "finger_joint1",
+        "finger_joint2"
+    ],
+    "urdf_actuated_names": [
+        "finger_joint1",
+        "finger_joint2"
+    ],
+    "usd_to_urdf_index": [
+        0,
+        1
+    ],
+    "urdf_to_usd_index": [
+        0,
+        1
+    ]
+}

@@ -1,0 +1,16 @@
+{
+  "gripper": "robotiq3_qp",
+  "dof_order": [
+    "RIQ_link_0_RIQ_link_1_joint_b",
+    "RIQ_link_0_RIQ_link_1_joint_c",
+    "RIQ_link_1_RIQ_link_2_joint_a",
+    "RIQ_link_1_RIQ_link_2_joint_b",
+    "RIQ_link_1_RIQ_link_2_joint_c",
+    "RIQ_link_2_RIQ_link_3_joint_a",
+    "RIQ_link_2_RIQ_link_3_joint_b",
+    "RIQ_link_2_RIQ_link_3_joint_c",
+    "RIQ_palm_RIQ_link_0_joint",
+    "RIQ_palm_RIQ_link_0_joint_b",
+    "RIQ_palm_RIQ_link_1_joint_a"
+  ]
+}

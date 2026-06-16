@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+.cache/
+outputs/
+data/cache/mgg_dataset_*.pt
+checkpoints/training_runs/
+EAGG_checkpoints.zip
+checkpoints/final/*.pth
+checkpoints/per_gripper/*.pth

@@ -1,0 +1,19 @@
+{
+    "gripper_name": "wsg_50",
+    "sim_dof_names": [
+        "base_joint_gripper_left",
+        "base_joint_gripper_right"
+    ],
+    "urdf_actuated_names": [
+        "base_joint_gripper_left",
+        "base_joint_gripper_right"
+    ],
+    "usd_to_urdf_index": [
+        0,
+        1
+    ],
+    "urdf_to_usd_index": [
+        0,
+        1
+    ]
+}
