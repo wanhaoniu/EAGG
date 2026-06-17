@@ -10,6 +10,7 @@ end-effector structure.
 
 <p>
   <a href="README_CN.md">中文</a> |
+  <a href="https://arxiv.org/abs/2606.18092">Paper</a> |
   <a href="#core-idea">Core Idea</a> |
   <a href="#installation">Installation</a> |
   <a href="#quick-start">Quick Start</a> |
@@ -19,6 +20,7 @@ end-effector structure.
 </p>
 
 <p>
+  <a href="https://arxiv.org/abs/2606.18092"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2606.18092-b31b1b?style=flat-square"></a>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white">
   <img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=flat-square&logo=pytorch&logoColor=white">
   <img alt="Dataset" src="https://img.shields.io/badge/Dataset-MGG-4B8BBE?style=flat-square">
@@ -394,15 +396,17 @@ Each end effector also has an overview sheet.
 
 ## Citation
 
-If you find EAGG useful, please cite the arXiv paper:
+If you find EAGG useful, please cite the [arXiv paper](https://arxiv.org/abs/2606.18092):
 
 ```bibtex
 @misc{niu2026eagg,
   title = {EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning},
   author = {Niu, Wanhao and Ke, Qiyan and Sun, Yuan and Sun, Hao and Xu, Jie and Ma, Muyuan and Hu, Ruiqi and Sun, Fuchun},
   year = {2026},
-  eprint = {arXiv:XXXX.XXXXX},
+  eprint = {2606.18092},
   archivePrefix = {arXiv},
-  primaryClass = {cs.RO}
+  primaryClass = {cs.RO},
+  doi = {10.48550/arXiv.2606.18092},
+  url = {https://arxiv.org/abs/2606.18092}
 }
 ```
