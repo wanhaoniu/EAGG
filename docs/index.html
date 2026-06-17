@@ -367,6 +367,79 @@
         align-items: start;
       }
 
+      .result-tables {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 24px;
+      }
+
+      .table-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .table-card.wide {
+        grid-column: 1 / -1;
+      }
+
+      .table-card h3 {
+        margin: 0;
+        padding: 18px 20px 12px;
+        font-size: 18px;
+        letter-spacing: 0;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        border-top: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      .compare-table th:nth-child(2),
+      .compare-table td:nth-child(2),
+      .hardware-table th:nth-child(2),
+      .hardware-table td:nth-child(2) {
+        text-align: left;
+      }
+
+      th {
+        color: #334155;
+        background: #f1f5f9;
+        font-weight: 850;
+      }
+
+      td {
+        color: #263241;
+      }
+
+      .result-note {
+        margin: 0;
+        padding: 12px 20px 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
       .result-card {
         overflow: hidden;
         border: 1px solid var(--line);
@@ -449,8 +522,13 @@
         .idea-grid,
         .method-layout,
         .results-grid,
+        .result-tables,
         .link-list {
           grid-template-columns: 1fr;
+        }
+
+        .table-card.wide {
+          grid-column: auto;
         }
 
         .method-layout {
@@ -469,9 +547,9 @@
     <header class="topbar">
       <a class="brand" href="#top">EAGG <span>Embodiment-Aligned Grasp Generation</span></a>
       <nav class="nav" aria-label="Primary navigation">
-        <a href="#results">Results</a>
         <a href="#video">Video</a>
         <a href="#method">Method</a>
+        <a href="#results">Results</a>
         <a href="https://arxiv.org/abs/2606.18092">Paper</a>
         <a href="https://github.com/wanhaoniu/EAGG">Code</a>
       </nav>
@@ -497,35 +575,6 @@
     </section>
 
     <main>
-      <section id="results">
-        <div class="section-inner">
-          <div class="section-head">
-            <p class="section-kicker">Selected Results</p>
-            <h2>Representative ranked mesh visualizations.</h2>
-            <p class="lead">
-              Checkpoint inference is followed by ranked candidate selection and mesh rendering
-              for bundled clean objects and released end effectors.
-            </p>
-          </div>
-          <div class="results-grid">
-            <figure class="result-card">
-              <img src="assets/allegro_cross_object.jpg" alt="Allegro generalization across objects">
-              <figcaption>
-                <h3>Cross-object generalization</h3>
-                <p>Allegro is applied to multiple clean demo objects, with selected generated grasps rendered as object-hand meshes.</p>
-              </figcaption>
-            </figure>
-            <figure class="result-card">
-              <img src="assets/mug_cross_gripper.jpg" alt="Mug generalization across end effectors">
-              <figcaption>
-                <h3>Cross-end-effector generalization</h3>
-                <p>The mug object is fixed while the generated grasp is rendered for different hands and grippers.</p>
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
       <section id="video">
         <div class="section-inner">
           <div class="section-head">
@@ -631,6 +680,182 @@
               <strong>MGG Dataset</strong>
               <span>MultiGripperGrasp project page</span>
             </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="results">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="section-kicker">Selected Results</p>
+            <h2>Ranked visualizations and compact quantitative summaries.</h2>
+            <p class="lead">
+              Checkpoint inference is followed by ranked candidate selection and mesh rendering
+              for bundled clean objects and released end effectors. The tables below summarize
+              the paper's representative simulation, ablation, and hardware results.
+            </p>
+          </div>
+          <div class="results-grid">
+            <figure class="result-card">
+              <img src="assets/allegro_cross_object.jpg" alt="Allegro generalization across objects">
+              <figcaption>
+                <h3>Cross-object generalization</h3>
+                <p>Allegro is applied to multiple clean demo objects, with selected generated grasps rendered as object-hand meshes.</p>
+              </figcaption>
+            </figure>
+            <figure class="result-card">
+              <img src="assets/mug_cross_gripper.jpg" alt="Mug generalization across end effectors">
+              <figcaption>
+                <h3>Cross-end-effector generalization</h3>
+                <p>The mug object is fixed while the generated grasp is rendered for different hands and grippers.</p>
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="result-tables" aria-label="EAGG quantitative result tables">
+            <article class="table-card compare-table">
+              <h3>Representative Simulation Comparison</h3>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>End Effector</th>
+                      <th>Method</th>
+                      <th>SR (%)</th>
+                      <th>CD (cm)</th>
+                      <th>PD (cm)</th>
+                      <th>CC</th>
+                      <th>RGR (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>WSG-50</td>
+                      <td>EAGG Unified</td>
+                      <td>14.50</td>
+                      <td>0.40</td>
+                      <td>0.77</td>
+                      <td>1.262</td>
+                      <td>8.76</td>
+                    </tr>
+                    <tr>
+                      <td>Robotiq 3F</td>
+                      <td>EAGG Unified</td>
+                      <td>78.42</td>
+                      <td>1.14</td>
+                      <td>1.48</td>
+                      <td>2.512</td>
+                      <td>1.20</td>
+                    </tr>
+                    <tr>
+                      <td>Allegro</td>
+                      <td>EAGG Unified</td>
+                      <td>86.46</td>
+                      <td>0.50</td>
+                      <td>1.04</td>
+                      <td>2.564</td>
+                      <td>0.12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="table-card">
+              <h3>Average Ablation Results</h3>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Variant</th>
+                      <th>SR (%)</th>
+                      <th>CD (cm)</th>
+                      <th>PD (cm)</th>
+                      <th>CC</th>
+                      <th>RGR (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Full EAGG</td>
+                      <td>56.17</td>
+                      <td>0.56</td>
+                      <td>1.04</td>
+                      <td>2.081</td>
+                      <td>3.16</td>
+                    </tr>
+                    <tr>
+                      <td>w/o Graph</td>
+                      <td>37.77</td>
+                      <td>1.10</td>
+                      <td>1.46</td>
+                      <td>1.758</td>
+                      <td>0.32</td>
+                    </tr>
+                    <tr>
+                      <td>w/o EndEffGeom</td>
+                      <td>38.75</td>
+                      <td>1.14</td>
+                      <td>1.56</td>
+                      <td>1.862</td>
+                      <td>0.52</td>
+                    </tr>
+                    <tr>
+                      <td>w/o BasisPrior</td>
+                      <td>43.48</td>
+                      <td>0.96</td>
+                      <td>1.38</td>
+                      <td>1.638</td>
+                      <td>0.58</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="table-card wide hardware-table">
+              <h3>Real-World Hardware Evaluation</h3>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Setup</th>
+                      <th>Object Groups</th>
+                      <th>Objects</th>
+                      <th>Attempts</th>
+                      <th>Average SR (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>UR5 + FreedomHand</td>
+                      <td>A-E</td>
+                      <td>57</td>
+                      <td>62</td>
+                      <td>91.94</td>
+                    </tr>
+                    <tr>
+                      <td>UR5 + DaHuan AG95</td>
+                      <td>A-E</td>
+                      <td>57</td>
+                      <td>60</td>
+                      <td>95.00</td>
+                    </tr>
+                    <tr>
+                      <td>SOARM101</td>
+                      <td>A-E</td>
+                      <td>57</td>
+                      <td>64</td>
+                      <td>89.06</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="result-note">
+                SR denotes success rate, CD contact distance, PD penetration depth, CC contact count,
+                and RGR repeated grasp rate.
+              </p>
+            </article>
           </div>
         </div>
       </section>
