@@ -10,6 +10,7 @@ end-effector structure.
 
 <p>
   <a href="README_CN.md">中文</a> |
+  <a href="https://wanhaoniu.github.io/EAGG/">Project Page</a> |
   <a href="https://arxiv.org/abs/2606.18092">Paper</a> |
   <a href="#core-idea">Core Idea</a> |
   <a href="#installation">Installation</a> |

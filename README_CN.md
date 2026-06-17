@@ -8,6 +8,7 @@ EAGG 面向异构机器人手和夹爪，根据物体几何生成抓取，并显
 
 <p>
   <a href="README.md">English</a> |
+  <a href="https://wanhaoniu.github.io/EAGG/">项目主页</a> |
   <a href="https://arxiv.org/abs/2606.18092">论文</a> |
   <a href="#核心思想">核心思想</a> |
   <a href="#安装与部署">安装</a> |
