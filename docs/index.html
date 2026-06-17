@@ -692,7 +692,7 @@
             <p class="lead">
               Checkpoint inference is followed by ranked candidate selection and mesh rendering
               for bundled clean objects and released end effectors. The tables below summarize
-              the paper's representative simulation, ablation, and hardware results.
+              the paper's representative simulation, cross-regime, and hardware results.
             </p>
           </div>
           <div class="results-grid">
@@ -739,6 +739,15 @@
                       <td>8.76</td>
                     </tr>
                     <tr>
+                      <td>WSG-50</td>
+                      <td>EAGG Specialized</td>
+                      <td>16.22</td>
+                      <td>0.33</td>
+                      <td>0.64</td>
+                      <td>1.817</td>
+                      <td>1.73</td>
+                    </tr>
+                    <tr>
                       <td>Robotiq 3F</td>
                       <td>EAGG Unified</td>
                       <td>78.42</td>
@@ -746,6 +755,15 @@
                       <td>1.48</td>
                       <td>2.512</td>
                       <td>1.20</td>
+                    </tr>
+                    <tr>
+                      <td>Robotiq 3F</td>
+                      <td>EAGG Specialized</td>
+                      <td>79.26</td>
+                      <td>0.78</td>
+                      <td>1.07</td>
+                      <td>2.615</td>
+                      <td>0.18</td>
                     </tr>
                     <tr>
                       <td>Allegro</td>
@@ -756,18 +774,28 @@
                       <td>2.564</td>
                       <td>0.12</td>
                     </tr>
+                    <tr>
+                      <td>Allegro</td>
+                      <td>EAGG Specialized</td>
+                      <td>87.59</td>
+                      <td>0.41</td>
+                      <td>0.91</td>
+                      <td>2.685</td>
+                      <td>0.00</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </article>
 
-            <article class="table-card">
-              <h3>Average Ablation Results</h3>
+            <article class="table-card compare-table">
+              <h3>Cross-Regime Simulation Summary</h3>
               <div class="table-scroll">
                 <table>
                   <thead>
                     <tr>
-                      <th>Variant</th>
+                      <th>Regime</th>
+                      <th>End Effectors</th>
                       <th>SR (%)</th>
                       <th>CD (cm)</th>
                       <th>PD (cm)</th>
@@ -777,7 +805,8 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Full EAGG</td>
+                      <td>Training Unified</td>
+                      <td>6 avg.</td>
                       <td>56.17</td>
                       <td>0.56</td>
                       <td>1.04</td>
@@ -785,28 +814,31 @@
                       <td>3.16</td>
                     </tr>
                     <tr>
-                      <td>w/o Graph</td>
-                      <td>37.77</td>
-                      <td>1.10</td>
-                      <td>1.46</td>
-                      <td>1.758</td>
-                      <td>0.32</td>
+                      <td>Training Specialized</td>
+                      <td>6 avg.</td>
+                      <td>57.27</td>
+                      <td>0.40</td>
+                      <td>0.79</td>
+                      <td>2.254</td>
+                      <td>1.21</td>
                     </tr>
                     <tr>
-                      <td>w/o EndEffGeom</td>
-                      <td>38.75</td>
-                      <td>1.14</td>
-                      <td>1.56</td>
-                      <td>1.862</td>
-                      <td>0.52</td>
+                      <td>Held-out Adapted</td>
+                      <td>2 avg.</td>
+                      <td>36.68</td>
+                      <td>0.36</td>
+                      <td>0.62</td>
+                      <td>2.196</td>
+                      <td>3.63</td>
                     </tr>
                     <tr>
-                      <td>w/o BasisPrior</td>
-                      <td>43.48</td>
-                      <td>0.96</td>
-                      <td>1.38</td>
-                      <td>1.638</td>
-                      <td>0.58</td>
+                      <td>Zero-shot Adapted</td>
+                      <td>2 avg.</td>
+                      <td>33.25</td>
+                      <td>0.56</td>
+                      <td>0.67</td>
+                      <td>2.332</td>
+                      <td>0.00</td>
                     </tr>
                   </tbody>
                 </table>
