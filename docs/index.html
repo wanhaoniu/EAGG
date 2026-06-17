@@ -108,7 +108,7 @@
       }
 
       .hero {
-        min-height: 86vh;
+        min-height: 66vh;
         position: relative;
         display: grid;
         align-items: end;
@@ -123,8 +123,8 @@
         inset: 0;
         z-index: -2;
         background:
-          linear-gradient(90deg, rgba(9, 16, 28, 0.86), rgba(9, 16, 28, 0.42) 58%, rgba(9, 16, 28, 0.18)),
-          url("assets/eagg_poster.jpg") center / cover no-repeat;
+          linear-gradient(90deg, rgba(9, 16, 28, 0.88), rgba(9, 16, 28, 0.56) 58%, rgba(9, 16, 28, 0.22)),
+          url("assets/fig1.jpg") center / cover no-repeat;
       }
 
       .hero::after {
@@ -215,7 +215,7 @@
       }
 
       section {
-        padding: 76px clamp(20px, 6vw, 86px);
+        padding: 58px clamp(20px, 6vw, 86px);
       }
 
       .section-inner {
@@ -251,11 +251,55 @@
       }
 
       .video-shell {
+        position: relative;
         overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: #101820;
         box-shadow: var(--shadow);
+      }
+
+      .video-loader {
+        position: relative;
+        display: grid;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: #101820;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .video-loader img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+
+      .video-loader::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(8, 12, 20, 0.1), rgba(8, 12, 20, 0.36));
+      }
+
+      .play-pill {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 22px;
+        border-radius: 999px;
+        background: #d7a64d;
+        color: #15120b;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+        font-size: 15px;
+        font-weight: 850;
+        transform: translate(-50%, -50%);
       }
 
       .video-shell video {
@@ -320,6 +364,7 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 18px;
+        align-items: start;
       }
 
       .result-card {
@@ -327,6 +372,7 @@
         border: 1px solid var(--line);
         border-radius: 8px;
         background: var(--panel);
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
       }
 
       .result-card img {
@@ -396,7 +442,7 @@
         }
 
         .hero {
-          min-height: 78vh;
+          min-height: 62vh;
           padding-top: 98px;
         }
 
@@ -423,9 +469,9 @@
     <header class="topbar">
       <a class="brand" href="#top">EAGG <span>Embodiment-Aligned Grasp Generation</span></a>
       <nav class="nav" aria-label="Primary navigation">
+        <a href="#results">Results</a>
         <a href="#video">Video</a>
         <a href="#method">Method</a>
-        <a href="#results">Results</a>
         <a href="https://arxiv.org/abs/2606.18092">Paper</a>
         <a href="https://github.com/wanhaoniu/EAGG">Code</a>
       </nav>
@@ -451,6 +497,35 @@
     </section>
 
     <main>
+      <section id="results">
+        <div class="section-inner">
+          <div class="section-head">
+            <p class="section-kicker">Selected Results</p>
+            <h2>Representative ranked mesh visualizations.</h2>
+            <p class="lead">
+              Checkpoint inference is followed by ranked candidate selection and mesh rendering
+              for bundled clean objects and released end effectors.
+            </p>
+          </div>
+          <div class="results-grid">
+            <figure class="result-card">
+              <img src="assets/allegro_cross_object.jpg" alt="Allegro generalization across objects">
+              <figcaption>
+                <h3>Cross-object generalization</h3>
+                <p>Allegro is applied to multiple clean demo objects, with selected generated grasps rendered as object-hand meshes.</p>
+              </figcaption>
+            </figure>
+            <figure class="result-card">
+              <img src="assets/mug_cross_gripper.jpg" alt="Mug generalization across end effectors">
+              <figcaption>
+                <h3>Cross-end-effector generalization</h3>
+                <p>The mug object is fixed while the generated grasp is rendered for different hands and grippers.</p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
       <section id="video">
         <div class="section-inner">
           <div class="section-head">
@@ -462,11 +537,23 @@
               structure.
             </p>
           </div>
-          <div class="video-shell">
-            <video controls preload="metadata" poster="assets/eagg_poster.jpg">
-              <source src="assets/eagg_demo.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+          <div class="video-shell" data-video-shell>
+            <button
+              class="video-loader"
+              type="button"
+              data-video-loader
+              data-video-src="assets/eagg_demo.mp4"
+              aria-label="Load and play the EAGG overview video"
+            >
+              <img src="assets/eagg_poster.jpg" alt="EAGG overview video preview" loading="lazy">
+              <span class="play-pill">Play Video</span>
+            </button>
+            <noscript>
+              <video controls preload="none" poster="assets/eagg_poster.jpg">
+                <source src="assets/eagg_demo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </noscript>
           </div>
         </div>
       </section>
@@ -521,35 +608,6 @@
         </div>
       </section>
 
-      <section id="results">
-        <div class="section-inner">
-          <div class="section-head">
-            <p class="section-kicker">Selected Results</p>
-            <h2>Representative ranked mesh visualizations.</h2>
-            <p class="lead">
-              The repository includes checkpoint inference, ranked candidate selection, and
-              mesh rendering for bundled objects and released end effectors.
-            </p>
-          </div>
-          <div class="results-grid">
-            <figure class="result-card">
-              <img src="assets/allegro_cross_object.jpg" alt="Allegro generalization across objects" loading="lazy">
-              <figcaption>
-                <h3>Cross-object generalization</h3>
-                <p>Allegro is applied to multiple clean demo objects, with selected generated grasps rendered as object-hand meshes.</p>
-              </figcaption>
-            </figure>
-            <figure class="result-card">
-              <img src="assets/mug_cross_gripper.jpg" alt="Mug generalization across end effectors" loading="lazy">
-              <figcaption>
-                <h3>Cross-end-effector generalization</h3>
-                <p>The mug object is fixed while the generated grasp is rendered for different hands and grippers.</p>
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
       <section class="links">
         <div class="section-inner">
           <div class="section-head">
@@ -581,5 +639,26 @@
     <footer>
       EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning.
     </footer>
+    <script>
+      const videoShell = document.querySelector("[data-video-shell]");
+      const videoLoader = document.querySelector("[data-video-loader]");
+
+      if (videoShell && videoLoader) {
+        videoLoader.addEventListener("click", () => {
+          const video = document.createElement("video");
+          const source = document.createElement("source");
+          source.src = videoLoader.dataset.videoSrc;
+          source.type = "video/mp4";
+          video.controls = true;
+          video.autoplay = true;
+          video.playsInline = true;
+          video.preload = "metadata";
+          video.poster = "assets/eagg_poster.jpg";
+          video.appendChild(source);
+          videoShell.replaceChildren(video);
+          video.play().catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
