@@ -10,23 +10,24 @@
     <meta property="og:title" content="EAGG">
     <meta
       property="og:description"
-      content="Object-conditioned grasp generation across heterogeneous robotic hands and grippers."
+      content="Embodiment-aligned grasp generation for heterogeneous robotic hands and grippers."
     >
     <meta property="og:type" content="website">
-    <meta property="og:image" content="assets/eagg_poster.jpg">
+    <meta property="og:image" content="assets/fig1.png">
     <title>EAGG | Embodiment-Aligned Grasp Generation</title>
     <style>
       :root {
-        --ink: #111827;
-        --muted: #5b6472;
-        --line: #d9dee7;
-        --paper: #f8fafc;
-        --panel: #ffffff;
-        --blue: #205493;
-        --steel: #2f5f8f;
-        --gold: #9d7030;
-        --green: #557c55;
-        --shadow: 0 18px 48px rgba(15, 23, 42, 0.16);
+        --ink: #0f1720;
+        --muted: #64707f;
+        --paper: #fbfcfd;
+        --panel: rgba(255, 255, 255, 0.84);
+        --line: rgba(15, 23, 32, 0.13);
+        --blue: #1592d1;
+        --blue-deep: #0e5ca8;
+        --red: #d64c55;
+        --red-deep: #9f2638;
+        --sand: #f3efe8;
+        --shadow: 0 26px 70px rgba(15, 23, 32, 0.16);
         color-scheme: light;
       }
 
@@ -40,12 +41,35 @@
 
       body {
         margin: 0;
+        min-height: 100vh;
         color: var(--ink);
-        background: var(--paper);
+        background: #f8fafc;
         font-family:
           Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
           "Segoe UI", sans-serif;
         line-height: 1.55;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background:
+          radial-gradient(circle at 21% 35%, rgba(21, 146, 209, 0.26), transparent 24rem),
+          radial-gradient(circle at 82% 31%, rgba(214, 76, 85, 0.22), transparent 26rem),
+          linear-gradient(115deg, #f7fbff 0%, #fffaf8 53%, #f9fbfd 100%);
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.78) 72%, #fff 100%),
+          repeating-linear-gradient(90deg, rgba(15, 23, 32, 0.025) 0, rgba(15, 23, 32, 0.025) 1px, transparent 1px, transparent 86px);
       }
 
       a {
@@ -54,207 +78,250 @@
       }
 
       img,
-      video {
+      video,
+      canvas {
         display: block;
         max-width: 100%;
       }
 
-      .topbar {
+      .ripple-canvas {
         position: fixed;
-        z-index: 30;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        padding: 16px clamp(20px, 5vw, 72px);
-        background: rgba(255, 255, 255, 0.88);
-        border-bottom: 1px solid rgba(217, 222, 231, 0.78);
-        backdrop-filter: blur(18px);
-      }
-
-      .brand {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        font-weight: 800;
-        letter-spacing: 0;
-      }
-
-      .brand span {
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 600;
-      }
-
-      .nav {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        color: #253041;
-        font-size: 14px;
-        font-weight: 650;
-      }
-
-      .nav a {
-        opacity: 0.86;
-      }
-
-      .nav a:hover {
-        opacity: 1;
-        color: var(--blue);
+        inset: 0;
+        z-index: -2;
+        width: 100vw;
+        height: 100vh;
+        opacity: 0.84;
+        pointer-events: none;
       }
 
       .hero {
-        min-height: 66vh;
         position: relative;
-        display: grid;
-        align-items: end;
-        padding: 118px clamp(22px, 6vw, 86px) 72px;
+        padding: clamp(64px, 8vw, 104px) clamp(18px, 4vw, 58px) 46px;
         overflow: hidden;
-        isolation: isolate;
       }
 
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -2;
-        background:
-          linear-gradient(90deg, rgba(9, 16, 28, 0.88), rgba(9, 16, 28, 0.56) 58%, rgba(9, 16, 28, 0.22)),
-          url("assets/fig1.jpg") center / cover no-repeat;
+      .hero-grid {
+        display: block;
+        max-width: 1460px;
+        margin: 0 auto;
       }
 
-      .hero::after {
-        content: "";
-        position: absolute;
-        inset: auto 0 0;
-        height: 28%;
-        z-index: -1;
-        background: linear-gradient(180deg, rgba(248, 250, 252, 0), var(--paper));
-      }
-
-      .hero-inner {
-        max-width: 940px;
-        color: #fff;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        margin: 0 0 20px;
-        color: #d9e7f7;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 0;
-        text-transform: uppercase;
-      }
-
-      .eyebrow::before {
-        content: "";
-        width: 34px;
-        height: 2px;
-        background: #d7a64d;
+      .hero-copy-block {
+        max-width: 1120px;
+        margin: 0 auto;
+        text-align: center;
       }
 
       h1 {
-        max-width: 920px;
         margin: 0;
-        font-size: clamp(44px, 8vw, 92px);
-        line-height: 0.98;
+        font-size: clamp(88px, 17vw, 224px);
+        line-height: 0.78;
         letter-spacing: 0;
+        text-align: center;
+      }
+
+      .eagg-word {
+        display: inline-block;
+        margin: 0 auto;
+        color: transparent;
+        background:
+          linear-gradient(90deg, #0d8fd3 0%, #39aee2 34%, #f8fafd 50%, #ef7780 66%, #cc2f46 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        filter: drop-shadow(0 20px 34px rgba(15, 23, 32, 0.18));
       }
 
       .subtitle {
-        max-width: 780px;
-        margin: 24px 0 0;
-        color: #eef4fb;
-        font-size: clamp(18px, 2.4vw, 25px);
+        max-width: 1040px;
+        margin: 22px auto 0;
+        color: #17212d;
+        font-size: clamp(27px, 3.7vw, 58px);
+        font-weight: 850;
+        line-height: 1.02;
       }
 
       .authors {
-        max-width: 900px;
-        margin: 18px 0 0;
-        color: #d9e7f7;
-        font-size: 15px;
+        max-width: 920px;
+        margin: 22px auto 0;
+        color: #334255;
+        font-size: clamp(16px, 1.45vw, 20px);
+        font-weight: 640;
       }
 
-      .hero-actions {
+      .hero-copy {
+        max-width: 860px;
+        margin: 18px auto 0;
+        color: #52606f;
+        font-size: clamp(16px, 1.4vw, 19px);
+      }
+
+      .action-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 32px;
+        justify-content: center;
+        gap: 11px;
+        margin-top: 26px;
       }
 
       .button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 42px;
-        padding: 10px 16px;
-        border: 1px solid rgba(255, 255, 255, 0.38);
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border-radius: 8px;
+        min-height: 40px;
+        padding: 9px 16px;
+        border: 1px solid rgba(15, 23, 32, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.76);
+        color: #151c25;
         font-size: 14px;
-        font-weight: 800;
-        backdrop-filter: blur(10px);
+        font-weight: 850;
+        box-shadow: 0 8px 22px rgba(15, 23, 32, 0.09);
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          background 160ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        background: #fff;
+        box-shadow: 0 14px 30px rgba(15, 23, 32, 0.13);
       }
 
       .button.primary {
-        border-color: #d7a64d;
-        background: #d7a64d;
-        color: #15120b;
+        border: 0;
+        background: #101820;
+        color: #fff;
+      }
+
+      .hero-visual {
+        position: relative;
+        max-width: min(1460px, 96vw);
+        margin: clamp(34px, 5vw, 58px) auto 0;
+      }
+
+      .hero-card {
+        position: relative;
+        overflow: hidden;
+        border: 0;
+        border-radius: 24px;
+        background: transparent;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card img {
+        width: 100%;
+        height: auto;
+        object-fit: initial;
+      }
+
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.12));
+      }
+
+      .visual-caption {
+        position: absolute;
+        right: 26px;
+        bottom: 24px;
+        z-index: 2;
+        max-width: 410px;
+        padding: 15px 17px;
+        border: 1px solid rgba(255, 255, 255, 0.56);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.82);
+        color: #283544;
+        font-size: 14px;
+        font-weight: 720;
+        box-shadow: 0 12px 28px rgba(15, 23, 32, 0.12);
+        backdrop-filter: blur(12px);
       }
 
       main {
-        background: var(--paper);
+        position: relative;
+        z-index: 1;
       }
 
       section {
-        padding: 58px clamp(20px, 6vw, 86px);
+        padding: 70px clamp(18px, 4vw, 58px);
       }
 
       .section-inner {
-        max-width: 1180px;
+        max-width: 1220px;
         margin: 0 auto;
       }
 
       .section-head {
-        max-width: 860px;
-        margin-bottom: 28px;
+        display: grid;
+        grid-template-columns: minmax(0, 0.58fr) minmax(0, 0.42fr);
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 24px;
       }
 
-      .section-kicker {
+      .kicker {
         margin: 0 0 8px;
-        color: var(--steel);
+        color: var(--red-deep);
         font-size: 13px;
-        font-weight: 850;
-        letter-spacing: 0;
+        font-weight: 930;
         text-transform: uppercase;
       }
 
       h2 {
         margin: 0;
-        font-size: clamp(28px, 4vw, 44px);
-        line-height: 1.08;
+        color: #101820;
+        font-size: clamp(30px, 4vw, 58px);
+        line-height: 1;
         letter-spacing: 0;
       }
 
-      .lead {
-        margin: 16px 0 0;
+      .section-note {
+        margin: 0;
         color: var(--muted);
+        font-size: 17px;
+      }
+
+      .info-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid rgba(15, 23, 32, 0.11);
+        border-radius: 22px;
+        background: rgba(15, 23, 32, 0.1);
+        box-shadow: 0 20px 54px rgba(15, 23, 32, 0.11);
+      }
+
+      .info-card {
+        min-height: 132px;
+        padding: 22px;
+        background: rgba(255, 255, 255, 0.83);
+        backdrop-filter: blur(16px);
+      }
+
+      .info-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #101820;
         font-size: 18px;
       }
 
-      .video-shell {
-        position: relative;
+      .info-card span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .video-section {
+        padding-top: 36px;
+      }
+
+      .video-frame {
         overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
+        border: 1px solid rgba(15, 23, 32, 0.12);
+        border-radius: 24px;
         background: #101820;
         box-shadow: var(--shadow);
       }
@@ -266,7 +333,6 @@
         padding: 0;
         border: 0;
         background: #101820;
-        color: #fff;
         cursor: pointer;
       }
 
@@ -280,259 +346,300 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, rgba(8, 12, 20, 0.1), rgba(8, 12, 20, 0.36));
+        background: linear-gradient(180deg, rgba(16, 24, 32, 0.05), rgba(16, 24, 32, 0.35));
       }
 
-      .play-pill {
+      .play-control {
         position: absolute;
-        z-index: 2;
         left: 50%;
         top: 50%;
+        z-index: 2;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 52px;
-        padding: 0 22px;
-        border-radius: 999px;
-        background: #d7a64d;
-        color: #15120b;
-        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
-        font-size: 15px;
-        font-weight: 850;
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background:
+          linear-gradient(90deg, rgba(21, 146, 209, 0.95), rgba(255, 255, 255, 0.95) 50%, rgba(214, 76, 85, 0.95));
+        color: #101820;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.27);
         transform: translate(-50%, -50%);
       }
 
-      .video-shell video {
+      .play-control::before {
+        content: "";
+        width: 0;
+        height: 0;
+        margin-left: 7px;
+        border-top: 17px solid transparent;
+        border-bottom: 17px solid transparent;
+        border-left: 27px solid currentColor;
+      }
+
+      .video-frame video {
         width: 100%;
         aspect-ratio: 16 / 9;
         background: #101820;
       }
 
-      .idea-grid {
+      .abstract-panel {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
-        margin-top: 28px;
+        grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.44fr);
+        gap: 24px;
+        align-items: stretch;
       }
 
-      .idea-card {
-        min-height: 210px;
-        padding: 22px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel);
+      .abstract-copy,
+      .metric-panel {
+        border: 1px solid rgba(15, 23, 32, 0.11);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.83);
+        box-shadow: 0 18px 50px rgba(15, 23, 32, 0.1);
+        backdrop-filter: blur(16px);
       }
 
-      .idea-card strong {
-        display: block;
-        margin-bottom: 10px;
-        color: var(--ink);
-        font-size: 17px;
+      .abstract-copy {
+        padding: clamp(24px, 4vw, 42px);
+        color: #2b3744;
+        font-size: 19px;
       }
 
-      .idea-card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 15px;
+      .abstract-copy p {
+        margin: 0 0 18px;
       }
 
-      .method {
-        background: #eef3f8;
-      }
-
-      .method-layout {
+      .metric-panel {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
-        gap: 34px;
-        align-items: center;
-      }
-
-      .method-copy p {
-        color: var(--muted);
-        font-size: 17px;
-      }
-
-      .method-figure {
+        align-content: stretch;
         overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fff;
+      }
+
+      .metric {
+        padding: 24px;
+        border-bottom: 1px solid rgba(15, 23, 32, 0.09);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+
+      .metric b {
+        display: block;
+        color: transparent;
+        background: linear-gradient(90deg, var(--blue-deep), var(--red-deep));
+        background-clip: text;
+        -webkit-background-clip: text;
+        font-size: clamp(32px, 4vw, 54px);
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 8px;
+        color: #536170;
+        font-size: 14px;
+        font-weight: 720;
+      }
+
+      .figure-panel {
+        overflow: hidden;
+        border: 1px solid rgba(15, 23, 32, 0.12);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.82);
         box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .figure-panel img {
+        width: 100%;
+      }
+
+      .figure-caption {
+        padding: 16px 20px 19px;
+        color: #536170;
+        font-size: 14px;
       }
 
       .results-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        align-items: start;
-      }
-
-      .result-tables {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        margin-top: 24px;
-      }
-
-      .table-card {
-        overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel);
-      }
-
-      .table-card.wide {
-        grid-column: 1 / -1;
-      }
-
-      .table-card h3 {
-        margin: 0;
-        padding: 18px 20px 12px;
-        font-size: 18px;
-        letter-spacing: 0;
-      }
-
-      .table-scroll {
-        overflow-x: auto;
-      }
-
-      table {
-        width: 100%;
-        min-width: 520px;
-        border-collapse: collapse;
-        font-size: 14px;
-      }
-
-      th,
-      td {
-        padding: 10px 12px;
-        border-top: 1px solid var(--line);
-        text-align: right;
-        white-space: nowrap;
-      }
-
-      th:first-child,
-      td:first-child {
-        text-align: left;
-      }
-
-      .compare-table th:nth-child(2),
-      .compare-table td:nth-child(2),
-      .hardware-table th:nth-child(2),
-      .hardware-table td:nth-child(2) {
-        text-align: left;
-      }
-
-      th {
-        color: #334155;
-        background: #f1f5f9;
-        font-weight: 850;
-      }
-
-      td {
-        color: #263241;
-      }
-
-      .result-note {
-        margin: 0;
-        padding: 12px 20px 18px;
-        color: var(--muted);
-        font-size: 14px;
+        gap: 22px;
       }
 
       .result-card {
         overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel);
-        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(15, 23, 32, 0.12);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow: 0 18px 42px rgba(15, 23, 32, 0.11);
+        backdrop-filter: blur(16px);
       }
 
       .result-card img {
         width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
       }
 
-      .result-card figcaption {
+      .result-card.tall img {
+        aspect-ratio: 16 / 11;
+        object-position: 50% 18%;
+      }
+
+      .result-body {
         padding: 18px 20px 20px;
       }
 
-      .result-card h3 {
-        margin: 0 0 8px;
-        font-size: 19px;
-        letter-spacing: 0;
+      .result-body h3 {
+        margin: 0 0 7px;
+        color: #101820;
+        font-size: 20px;
       }
 
-      .result-card p {
+      .result-body p {
         margin: 0;
         color: var(--muted);
+        font-size: 15px;
       }
 
-      .links {
-        background: #152131;
-        color: #fff;
+      .links-panel,
+      .citation-panel {
+        border: 1px solid rgba(15, 23, 32, 0.12);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 18px 42px rgba(15, 23, 32, 0.1);
+        backdrop-filter: blur(16px);
       }
 
-      .link-list {
+      .links-panel {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 24px;
+        gap: 1px;
+        overflow: hidden;
+        background: rgba(15, 23, 32, 0.1);
       }
 
-      .link-item {
-        padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.06);
+      .resource-link {
+        min-height: 142px;
+        padding: 22px;
+        background: rgba(255, 255, 255, 0.9);
       }
 
-      .link-item strong {
+      .resource-link strong {
         display: block;
         margin-bottom: 8px;
+        color: #101820;
+        font-size: 20px;
       }
 
-      .link-item span {
-        color: #c6d2df;
+      .resource-link span {
+        color: var(--muted);
         font-size: 14px;
+      }
+
+      .citation-panel {
+        overflow: hidden;
+        max-width: 980px;
+        margin: 0 auto;
+      }
+
+      .citation-panel h3 {
+        margin: 0;
+        padding: 18px 20px 0;
+        color: #101820;
+        font-size: 20px;
+      }
+
+      pre {
+        margin: 0;
+        overflow-x: auto;
+        padding: 16px 20px 20px;
+        color: #2f3b49;
+        font-size: 12px;
+        line-height: 1.48;
       }
 
       footer {
-        padding: 26px clamp(20px, 6vw, 86px);
-        color: #697486;
-        background: #fff;
-        border-top: 1px solid var(--line);
+        padding: 34px clamp(18px, 4vw, 58px);
+        color: #697789;
+        text-align: center;
         font-size: 14px;
       }
 
-      @media (max-width: 900px) {
-        .topbar {
-          position: absolute;
-          align-items: flex-start;
-        }
-
-        .nav {
-          display: none;
-        }
-
-        .hero {
-          min-height: 62vh;
-          padding-top: 98px;
-        }
-
-        .idea-grid,
-        .method-layout,
-        .results-grid,
-        .result-tables,
-        .link-list {
+      @media (max-width: 1020px) {
+        .section-head,
+        .abstract-panel {
           grid-template-columns: 1fr;
         }
 
-        .table-card.wide {
-          grid-column: auto;
+        .hero-copy,
+        .authors,
+        .subtitle {
+          max-width: none;
         }
 
-        .method-layout {
-          gap: 24px;
+        .info-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .hero {
+          padding-top: 44px;
+        }
+
+        .visual-caption {
+          position: static;
+          max-width: none;
+          border-radius: 0;
+          border-width: 1px 0 0;
+          box-shadow: none;
+        }
+
+        .info-strip,
+        .links-panel,
+        .results-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .play-control {
+          width: 72px;
+          height: 72px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        section {
+          padding: 52px 16px;
+        }
+
+        .hero {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        .action-row {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .button {
+          min-width: 0;
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        .hero-card,
+        .video-frame,
+        .figure-panel,
+        .abstract-copy,
+        .metric-panel,
+        .result-card,
+        .links-panel,
+        .citation-panel,
+        .info-strip {
+          border-radius: 18px;
         }
       }
 
@@ -540,66 +647,100 @@
         html {
           scroll-behavior: auto;
         }
+
+        .button {
+          transition: none;
+        }
       }
     </style>
   </head>
   <body>
-    <header class="topbar">
-      <a class="brand" href="#top">EAGG <span>Embodiment-Aligned Grasp Generation</span></a>
-      <nav class="nav" aria-label="Primary navigation">
-        <a href="#video">Video</a>
-        <a href="#method">Method</a>
-        <a href="#results">Results</a>
-        <a href="https://arxiv.org/abs/2606.18092">Paper</a>
-        <a href="https://github.com/wanhaoniu/EAGG">Code</a>
-      </nav>
-    </header>
+    <canvas class="ripple-canvas" data-ripple-canvas aria-hidden="true"></canvas>
 
     <section class="hero" id="top">
-      <div class="hero-inner">
-        <p class="eyebrow">arXiv 2606.18092</p>
-        <h1>EAGG</h1>
-        <p class="subtitle">
-          Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning
-        </p>
-        <p class="authors">
-          Wanhao Niu, Qiyan Ke, Yuan Sun, Hao Sun, Jie Xu, Muyuan Ma, Ruiqi Hu, and Fuchun Sun
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="https://arxiv.org/abs/2606.18092">Paper</a>
-          <a class="button" href="https://github.com/wanhaoniu/EAGG">Code</a>
-          <a class="button" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">Checkpoints</a>
-          <a class="button" href="#video">Watch Video</a>
+      <div class="hero-grid">
+        <div class="hero-copy-block">
+          <h1><span class="eagg-word">EAGG</span></h1>
+          <p class="subtitle">
+            Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning
+          </p>
+          <p class="authors">
+            Wanhao Niu, Qiyan Ke, Yuan Sun, Hao Sun, Jie Xu, Muyuan Ma, Ruiqi Hu, and Fuchun Sun
+          </p>
+          <p class="hero-copy">
+            A unified generator for object-conditioned grasp synthesis across heterogeneous
+            robotic hands and grippers, aligned through embodiment topology and articulated geometry.
+          </p>
+          <div class="action-row" aria-label="Project links">
+            <a class="button primary" href="https://arxiv.org/abs/2606.18092">Paper</a>
+            <a class="button" href="https://github.com/wanhaoniu/EAGG">Code</a>
+            <a class="button" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">Checkpoints</a>
+            <a class="button" href="#video">Watch Video</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-card">
+            <img src="assets/fig1.png" alt="EAGG cross-end-effector grasp generation overview">
+            <div class="visual-caption">
+              Multi-object inputs and multi-hand inputs converge into EAGG, then branch into
+              cross-object and cross-hand grasp generation.
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <main>
-      <section id="video">
+      <section id="overview">
+        <div class="section-inner">
+          <div class="info-strip" aria-label="EAGG project summary">
+            <article class="info-card">
+              <strong>Unified Generator</strong>
+              <span>One model operates across heterogeneous end effectors without a shared raw joint parameterization.</span>
+            </article>
+            <article class="info-card">
+              <strong>Embodiment Graph</strong>
+              <span>Topology-aware conditioning preserves kinematic structure and morphology-specific coupling.</span>
+            </article>
+            <article class="info-card">
+              <strong>Geometry Injection</strong>
+              <span>End-effector tokens are refreshed during sampling as articulated geometry evolves.</span>
+            </article>
+            <article class="info-card">
+              <strong>Hardware Transfer</strong>
+              <span>Evaluated in simulation and real-world setups across hands, grippers, and object groups.</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="video-section" id="video">
         <div class="section-inner">
           <div class="section-head">
-            <p class="section-kicker">Overview Video</p>
-            <h2>Cross-object and cross-end-effector grasp generation.</h2>
-            <p class="lead">
-              EAGG generates object-conditioned grasps for heterogeneous robotic hands and
-              grippers by conditioning the generator on both object geometry and end-effector
-              structure.
+            <div>
+              <p class="kicker">Demo</p>
+              <h2>Watch EAGG move across embodiments.</h2>
+            </div>
+            <p class="section-note">
+              The video summarizes generated grasps, cross-end-effector behavior, and the visual
+              result of geometry-aware conditioning.
             </p>
           </div>
-          <div class="video-shell" data-video-shell>
+          <div class="video-frame" data-video-shell>
             <button
               class="video-loader"
               type="button"
               data-video-loader
-              data-video-src="assets/eagg_demo.mp4"
+              data-video-src="assets/vedio.mp4"
               aria-label="Load and play the EAGG overview video"
             >
               <img src="assets/eagg_poster.jpg" alt="EAGG overview video preview" loading="lazy">
-              <span class="play-pill">Play Video</span>
+              <span class="play-control" aria-hidden="true"></span>
             </button>
             <noscript>
               <video controls preload="none" poster="assets/eagg_poster.jpg">
-                <source src="assets/eagg_demo.mp4" type="video/mp4">
+                <source src="assets/vedio.mp4" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
             </noscript>
@@ -607,287 +748,175 @@
         </div>
       </section>
 
-      <section>
+      <section id="abstract">
         <div class="section-inner">
           <div class="section-head">
-            <p class="section-kicker">Core Idea</p>
-            <h2>Align embodiment structure instead of suppressing it.</h2>
-            <p class="lead">
-              Different hands and grippers have different topology, joint spaces, closure
-              behavior, and contact geometry. EAGG keeps those differences explicit and turns
-              them into geometry-aware conditioning for a shared grasp generator.
+            <div>
+              <p class="kicker">Abstract</p>
+              <h2>Align embodiment structure instead of hiding it.</h2>
+            </div>
+            <p class="section-note">
+              EAGG treats embodiment as a geometric and topological signal, not a static label.
             </p>
           </div>
-          <div class="idea-grid">
-            <article class="idea-card">
-              <strong>Embodiment-specific control basis</strong>
-              <p>Each end effector keeps a low-dimensional control space without forcing all hands into one raw joint parameterization.</p>
-            </article>
-            <article class="idea-card">
-              <strong>Topology-aware graph</strong>
-              <p>The end-effector graph preserves kinematic organization, coupling, and morphology-specific structure.</p>
-            </article>
-            <article class="idea-card">
-              <strong>End-effector cognition</strong>
-              <p>A frozen backbone extracts geometry-aware tokens from the current articulated hand or gripper state.</p>
-            </article>
-            <article class="idea-card">
-              <strong>Iterative geometry injection</strong>
-              <p>Conditioning is refreshed during sampling so the generator remains synchronized with evolving grasp geometry.</p>
-            </article>
+          <div class="abstract-panel">
+            <div class="abstract-copy">
+              <p>
+                Cross-end-effector grasp generation seeks a single model that can synthesize
+                grasps for heterogeneous end effectors while preserving generalization across
+                novel objects. Existing generators are typically designed for fixed embodiments
+                or encode embodiment identity with static labels, weakening transfer when
+                topology, actuation coupling, and contact geometry differ.
+              </p>
+              <p>
+                EAGG addresses this with an embodiment-aligned representation: each end effector
+                keeps a topology-aware graph and a PCA-based low-dimensional control space. A
+                frozen end-effector-cognition backbone converts articulated states into
+                geometry-aware tokens, while iterative geometry injection keeps conditioning
+                synchronized with the evolving grasp.
+              </p>
+            </div>
+            <aside class="metric-panel" aria-label="Key quantitative highlights">
+              <div class="metric">
+                <b>56.17%</b>
+                <span>average success across six training end effectors in the unified setting</span>
+              </div>
+              <div class="metric">
+                <b>1.10</b>
+                <span>points from specialized training while preserving transfer ability</span>
+              </div>
+              <div class="metric">
+                <b>0.189cm</b>
+                <span>pooled median contact distance after IGI refinement</span>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
 
-      <section class="method" id="method">
-        <div class="section-inner method-layout">
-          <div class="method-copy">
-            <p class="section-kicker">Method</p>
-            <h2>Geometry-aware graph conditioning for heterogeneous end effectors.</h2>
-            <p>
-              EAGG combines object point tokens, grasp tokens, and end-effector tokens inside
-              a transformer generator. The hand/gripper tokens are produced from topology-aware
-              graph features and a canonical end-effector cloud, then updated through iterative
-              geometry injection.
+      <section id="method">
+        <div class="section-inner">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Method</p>
+              <h2>Graph-conditioned generation with geometry refreshed in the loop.</h2>
+            </div>
+            <p class="section-note">
+              Object tokens, grasp tokens, and end-effector tokens meet inside a transformer
+              generator conditioned by morphology-aware structure.
             </p>
           </div>
-          <figure class="method-figure">
-            <img src="assets/method.jpg" alt="EAGG method overview" loading="lazy">
+          <figure class="figure-panel">
+            <img src="assets/method_full.jpg" alt="EAGG method overview diagram" loading="lazy">
+            <figcaption class="figure-caption">
+              EAGG encodes object geometry and end-effector geometry, injects topology-aware
+              conditioning, and updates hand/gripper features throughout denoising.
+            </figcaption>
           </figure>
-        </div>
-      </section>
-
-      <section class="links">
-        <div class="section-inner">
-          <div class="section-head">
-            <p class="section-kicker">Resources</p>
-            <h2>Paper, code, checkpoints, and dataset references.</h2>
-          </div>
-          <div class="link-list">
-            <a class="link-item" href="https://arxiv.org/abs/2606.18092">
-              <strong>Paper</strong>
-              <span>arXiv:2606.18092</span>
-            </a>
-            <a class="link-item" href="https://github.com/wanhaoniu/EAGG">
-              <strong>Code</strong>
-              <span>Inference, training, assets, and visualization tools</span>
-            </a>
-            <a class="link-item" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">
-              <strong>Checkpoints</strong>
-              <span>Released final and per-gripper model weights</span>
-            </a>
-            <a class="link-item" href="https://irvlutd.github.io/MultiGripperGrasp/">
-              <strong>MGG Dataset</strong>
-              <span>MultiGripperGrasp project page</span>
-            </a>
-          </div>
         </div>
       </section>
 
       <section id="results">
         <div class="section-inner">
           <div class="section-head">
-            <p class="section-kicker">Selected Results</p>
-            <h2>Ranked visualizations and compact quantitative summaries.</h2>
-            <p class="lead">
-              Checkpoint inference is followed by ranked candidate selection and mesh rendering
-              for bundled clean objects and released end effectors. The tables below summarize
-              the paper's representative simulation, cross-regime, and hardware results.
+            <div>
+              <p class="kicker">Results</p>
+              <h2>Cross-object, cross-hand, and hardware behavior.</h2>
+            </div>
+            <p class="section-note">
+              Results use high-resolution paper figures where possible, with lightweight
+              previews for generated grasp galleries.
             </p>
           </div>
           <div class="results-grid">
-            <figure class="result-card">
-              <img src="assets/allegro_cross_object.jpg" alt="Allegro generalization across objects">
-              <figcaption>
-                <h3>Cross-object generalization</h3>
-                <p>Allegro is applied to multiple clean demo objects, with selected generated grasps rendered as object-hand meshes.</p>
-              </figcaption>
-            </figure>
-            <figure class="result-card">
-              <img src="assets/mug_cross_gripper.jpg" alt="Mug generalization across end effectors">
-              <figcaption>
-                <h3>Cross-end-effector generalization</h3>
-                <p>The mug object is fixed while the generated grasp is rendered for different hands and grippers.</p>
-              </figcaption>
-            </figure>
+            <article class="result-card tall">
+              <img src="assets/results_realworld.jpg" alt="Real-world EAGG hardware evaluation figure" loading="lazy">
+              <div class="result-body">
+                <h3>Cross-regime grasp synthesis</h3>
+                <p>Generated grasps span training, finetuned, and zero-shot end effectors across object categories.</p>
+              </div>
+            </article>
+            <article class="result-card">
+              <img src="assets/ablation_summary.jpg" alt="EAGG ablation and quantitative analysis figure" loading="lazy">
+              <div class="result-body">
+                <h3>Real-world evaluation</h3>
+                <p>Hardware trials cover FreedomHand, Dahuan AG95, and SOARM 101 setups in physical scenes.</p>
+              </div>
+            </article>
+            <article class="result-card">
+              <img src="assets/allegro_cross_object.jpg" alt="Allegro generated grasps across objects" loading="lazy">
+              <div class="result-body">
+                <h3>Cross-object gallery</h3>
+                <p>The same embodiment is applied to multiple clean objects with ranked generated grasps.</p>
+              </div>
+            </article>
+            <article class="result-card">
+              <img src="assets/mug_cross_gripper.jpg" alt="Generated mug grasps across end effectors" loading="lazy">
+              <div class="result-body">
+                <h3>Cross-end-effector gallery</h3>
+                <p>A fixed object is paired with different released hands and grippers to show embodiment transfer.</p>
+              </div>
+            </article>
           </div>
+        </div>
+      </section>
 
-          <div class="result-tables" aria-label="EAGG quantitative result tables">
-            <article class="table-card compare-table">
-              <h3>Representative Simulation Comparison</h3>
-              <div class="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>End Effector</th>
-                      <th>Method</th>
-                      <th>SR (%)</th>
-                      <th>CD (cm)</th>
-                      <th>PD (cm)</th>
-                      <th>CC</th>
-                      <th>RGR (%)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>WSG-50</td>
-                      <td>EAGG Unified</td>
-                      <td>14.50</td>
-                      <td>0.40</td>
-                      <td>0.77</td>
-                      <td>1.262</td>
-                      <td>8.76</td>
-                    </tr>
-                    <tr>
-                      <td>WSG-50</td>
-                      <td>EAGG Specialized</td>
-                      <td>16.22</td>
-                      <td>0.33</td>
-                      <td>0.64</td>
-                      <td>1.817</td>
-                      <td>1.73</td>
-                    </tr>
-                    <tr>
-                      <td>Robotiq 3F</td>
-                      <td>EAGG Unified</td>
-                      <td>78.42</td>
-                      <td>1.14</td>
-                      <td>1.48</td>
-                      <td>2.512</td>
-                      <td>1.20</td>
-                    </tr>
-                    <tr>
-                      <td>Robotiq 3F</td>
-                      <td>EAGG Specialized</td>
-                      <td>79.26</td>
-                      <td>0.78</td>
-                      <td>1.07</td>
-                      <td>2.615</td>
-                      <td>0.18</td>
-                    </tr>
-                    <tr>
-                      <td>Allegro</td>
-                      <td>EAGG Unified</td>
-                      <td>86.46</td>
-                      <td>0.50</td>
-                      <td>1.04</td>
-                      <td>2.564</td>
-                      <td>0.12</td>
-                    </tr>
-                    <tr>
-                      <td>Allegro</td>
-                      <td>EAGG Specialized</td>
-                      <td>87.59</td>
-                      <td>0.41</td>
-                      <td>0.91</td>
-                      <td>2.685</td>
-                      <td>0.00</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </article>
+      <section id="resources">
+        <div class="section-inner">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Resources</p>
+              <h2>Paper, code, checkpoints, and dataset.</h2>
+            </div>
+            <p class="section-note">
+              The project links stay compact and easy to scan, with citation separated below
+              for direct copying.
+            </p>
+          </div>
+          <div class="links-panel">
+            <a class="resource-link" href="https://arxiv.org/abs/2606.18092">
+              <strong>Paper</strong>
+              <span>arXiv:2606.18092</span>
+            </a>
+            <a class="resource-link" href="https://github.com/wanhaoniu/EAGG">
+              <strong>Code</strong>
+              <span>Inference, training, visualization tools, assets, and configs.</span>
+            </a>
+            <a class="resource-link" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">
+              <strong>Checkpoints</strong>
+              <span>Released final and per-gripper model weights.</span>
+            </a>
+            <a class="resource-link" href="https://irvlutd.github.io/MultiGripperGrasp/">
+              <strong>MGG Dataset</strong>
+              <span>MultiGripperGrasp dataset and project reference.</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
-            <article class="table-card compare-table">
-              <h3>Cross-Regime Simulation Summary</h3>
-              <div class="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Regime</th>
-                      <th>End Effectors</th>
-                      <th>SR (%)</th>
-                      <th>CD (cm)</th>
-                      <th>PD (cm)</th>
-                      <th>CC</th>
-                      <th>RGR (%)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Training Unified</td>
-                      <td>6 avg.</td>
-                      <td>56.17</td>
-                      <td>0.56</td>
-                      <td>1.04</td>
-                      <td>2.081</td>
-                      <td>3.16</td>
-                    </tr>
-                    <tr>
-                      <td>Training Specialized</td>
-                      <td>6 avg.</td>
-                      <td>57.27</td>
-                      <td>0.40</td>
-                      <td>0.79</td>
-                      <td>2.254</td>
-                      <td>1.21</td>
-                    </tr>
-                    <tr>
-                      <td>Held-out Adapted</td>
-                      <td>2 avg.</td>
-                      <td>36.68</td>
-                      <td>0.36</td>
-                      <td>0.62</td>
-                      <td>2.196</td>
-                      <td>3.63</td>
-                    </tr>
-                    <tr>
-                      <td>Zero-shot Adapted</td>
-                      <td>2 avg.</td>
-                      <td>33.25</td>
-                      <td>0.56</td>
-                      <td>0.67</td>
-                      <td>2.332</td>
-                      <td>0.00</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="table-card wide hardware-table">
-              <h3>Real-World Hardware Evaluation</h3>
-              <div class="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Setup</th>
-                      <th>Object Groups</th>
-                      <th>Objects</th>
-                      <th>Attempts</th>
-                      <th>Average SR (%)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>UR5 + FreedomHand</td>
-                      <td>A-E</td>
-                      <td>57</td>
-                      <td>62</td>
-                      <td>91.94</td>
-                    </tr>
-                    <tr>
-                      <td>UR5 + DaHuan AG95</td>
-                      <td>A-E</td>
-                      <td>57</td>
-                      <td>60</td>
-                      <td>95.00</td>
-                    </tr>
-                    <tr>
-                      <td>SOARM101</td>
-                      <td>A-E</td>
-                      <td>57</td>
-                      <td>64</td>
-                      <td>89.06</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p class="result-note">
-                SR denotes success rate, CD contact distance, PD penetration depth, CC contact count,
-                and RGR repeated grasp rate.
-              </p>
-            </article>
+      <section id="citation">
+        <div class="section-inner">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Citation</p>
+              <h2>Cite EAGG.</h2>
+            </div>
+            <p class="section-note">
+              Use the BibTeX entry below if this work is helpful for your research.
+            </p>
+          </div>
+          <div class="citation-panel">
+            <h3>BibTeX</h3>
+            <pre>@misc{niu2026eagg,
+  title = {EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning},
+  author = {Niu, Wanhao and Ke, Qiyan and Sun, Yuan and Sun, Hao and Xu, Jie and Ma, Muyuan and Hu, Ruiqi and Sun, Fuchun},
+  year = {2026},
+  eprint = {2606.18092},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.RO},
+  doi = {10.48550/arXiv.2606.18092},
+  url = {https://arxiv.org/abs/2606.18092}
+}</pre>
           </div>
         </div>
       </section>
@@ -896,7 +925,67 @@
     <footer>
       EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning.
     </footer>
+
     <script>
+      const canvas = document.querySelector("[data-ripple-canvas]");
+      const context = canvas ? canvas.getContext("2d") : null;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function resizeCanvas() {
+        if (!canvas || !context) return;
+        const scale = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.floor(window.innerWidth * scale);
+        canvas.height = Math.floor(window.innerHeight * scale);
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        context.setTransform(scale, 0, 0, scale, 0, 0);
+      }
+
+      function drawRipple(time = 0) {
+        if (!canvas || !context) return;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        context.clearRect(0, 0, width, height);
+        context.lineWidth = 1.2;
+
+        const centerY = height * 0.48;
+        for (let i = 0; i < 18; i += 1) {
+          const progress = i / 17;
+          const y = centerY + (progress - 0.5) * height * 0.72;
+          const wave = reduceMotion ? 0 : Math.sin(time * 0.00045 + i * 0.72) * 18;
+
+          const blueAlpha = 0.17 - progress * 0.06;
+          context.strokeStyle = `rgba(21, 146, 209, ${blueAlpha})`;
+          context.beginPath();
+          context.moveTo(-40, y + wave);
+          context.bezierCurveTo(width * 0.24, y - 84 + wave, width * 0.42, y + 68 - wave, width * 0.53, centerY + wave * 0.34);
+          context.stroke();
+
+          const redAlpha = 0.16 - progress * 0.055;
+          context.strokeStyle = `rgba(214, 76, 85, ${redAlpha})`;
+          context.beginPath();
+          context.moveTo(width + 40, y - wave);
+          context.bezierCurveTo(width * 0.76, y - 78 - wave, width * 0.58, y + 62 + wave, width * 0.48, centerY - wave * 0.28);
+          context.stroke();
+        }
+
+        const glow = context.createRadialGradient(width * 0.5, centerY, 0, width * 0.5, centerY, Math.max(width, height) * 0.48);
+        glow.addColorStop(0, "rgba(255, 255, 255, 0.58)");
+        glow.addColorStop(0.36, "rgba(255, 255, 255, 0.08)");
+        glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+        context.fillStyle = glow;
+        context.fillRect(0, 0, width, height);
+
+        if (!reduceMotion) requestAnimationFrame(drawRipple);
+      }
+
+      resizeCanvas();
+      drawRipple();
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        if (reduceMotion) drawRipple();
+      });
+
       const videoShell = document.querySelector("[data-video-shell]");
       const videoLoader = document.querySelector("[data-video-loader]");
 
