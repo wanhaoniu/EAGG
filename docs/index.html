@@ -3,643 +3,1300 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EAGG | Embodiment-Aligned Grasp Generation</title>
     <meta
       name="description"
-      content="EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning."
+      content="EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning. One grasp generator across objects and across end effectors, from parallel grippers to dexterous hands."
     >
-    <meta property="og:title" content="EAGG">
+    <link rel="canonical" href="https://wanhaoniu.github.io/EAGG/">
+    <meta name="theme-color" content="#f8f8f6">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wanhaoniu.github.io/EAGG/">
+    <meta property="og:title" content="EAGG: Embodiment-Aligned Grasp Generation">
     <meta
       property="og:description"
-      content="Embodiment-aligned grasp generation for heterogeneous robotic hands and grippers."
+      content="One grasp generator across objects and across end effectors, from parallel grippers to dexterous hands."
     >
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="assets/fig1.jpg">
-    <title>EAGG | Embodiment-Aligned Grasp Generation</title>
+    <meta property="og:image" content="https://wanhaoniu.github.io/EAGG/assets/fig1.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%233aa0da'/%3E%3Cstop offset='1' stop-color='%23e5625e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='13' fill='url(%23g)'/%3E%3C/svg%3E"
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap"
+    >
     <style>
       :root {
-        --ink: #0f1720;
-        --muted: #64707f;
-        --paper: #fbfcfd;
-        --panel: rgba(255, 255, 255, 0.84);
-        --line: rgba(15, 23, 32, 0.13);
-        --blue: #1592d1;
-        --blue-deep: #0e5ca8;
-        --red: #d64c55;
-        --red-deep: #9f2638;
-        --sand: #f3efe8;
-        --shadow: 0 26px 70px rgba(15, 23, 32, 0.16);
+        --bg: #f8f8f6;
+        --surface: #ffffff;
+        --ink: #101318;
+        --ink-2: #353d4a;
+        --muted: #667080;
+        --line: #e3e3de;
+        --line-strong: #cfcfc8;
+        --accent: #2f55a4;
+        --accent-soft: #eaeff8;
+        --sky: #3aa0da;
+        --coral: #e5625e;
+        --radius: 14px;
+        --radius-sm: 10px;
+        --wrap: 1140px;
+        --rail: 200px;
+        --gutter: clamp(16px, 4vw, 32px);
+        --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         color-scheme: light;
       }
 
-      * {
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
       }
 
       html {
         scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
       }
 
       body {
         margin: 0;
-        min-height: 100vh;
+        background: var(--bg);
         color: var(--ink);
-        background: #f8fafc;
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
-        line-height: 1.55;
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
 
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -3;
-        background:
-          radial-gradient(circle at 21% 35%, rgba(21, 146, 209, 0.26), transparent 24rem),
-          radial-gradient(circle at 82% 31%, rgba(214, 76, 85, 0.22), transparent 26rem),
-          linear-gradient(115deg, #f7fbff 0%, #fffaf8 53%, #f9fbfd 100%);
-      }
-
-      body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.78) 72%, #fff 100%),
-          repeating-linear-gradient(90deg, rgba(15, 23, 32, 0.025) 0, rgba(15, 23, 32, 0.025) 1px, transparent 1px, transparent 86px);
+      img,
+      video {
+        display: block;
+        max-width: 100%;
+        height: auto;
       }
 
       a {
         color: inherit;
+      }
+
+      button {
+        font: inherit;
+        color: inherit;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      .wrap {
+        width: 100%;
+        max-width: calc(var(--wrap) + 2 * var(--gutter));
+        margin-inline: auto;
+        padding-inline: var(--gutter);
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 12px;
+        top: -48px;
+        z-index: 100;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: var(--ink);
+        color: #fff;
         text-decoration: none;
       }
 
-      img,
-      video,
-      canvas {
-        display: block;
-        max-width: 100%;
+      .skip-link:focus {
+        top: 12px;
       }
 
-      .ripple-canvas {
-        position: fixed;
-        inset: 0;
-        z-index: -2;
-        width: 100vw;
-        height: 100vh;
-        opacity: 0.84;
-        pointer-events: none;
+      /* Top bar */
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        border-bottom: 1px solid transparent;
+        background: rgba(248, 248, 246, 0.82);
+        -webkit-backdrop-filter: saturate(160%) blur(14px);
+        backdrop-filter: saturate(160%) blur(14px);
+        transition: border-color 200ms ease;
       }
+
+      .topbar.is-scrolled {
+        border-bottom-color: var(--line);
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        height: 60px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, var(--sky), var(--coral));
+      }
+
+      .topbar nav {
+        flex: 1;
+      }
+
+      .nav-links {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 6px 12px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 150ms ease, background-color 150ms ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+
+      .nav-links a[aria-current="true"] {
+        color: var(--ink);
+        background: rgba(16, 19, 24, 0.05);
+      }
+
+      .nav-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Buttons */
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 18px;
+        border: 1px solid var(--line-strong);
+        border-radius: 10px;
+        background: var(--surface);
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 500;
+        white-space: nowrap;
+        text-decoration: none;
+        cursor: pointer;
+        transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+      }
+
+      .btn:hover {
+        border-color: #a9a9a2;
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .btn svg {
+        width: 17px;
+        height: 17px;
+        flex: none;
+      }
+
+      .btn-primary {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        border-color: #2a3039;
+        background: #2a3039;
+      }
+
+      .btn-sm {
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 13.5px;
+      }
+
+      .btn-sm svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* Hero */
 
       .hero {
         position: relative;
-        padding: clamp(64px, 8vw, 104px) clamp(18px, 4vw, 58px) 46px;
-        overflow: hidden;
+        padding-block: clamp(48px, 8vw, 96px) 0;
       }
 
-      .hero-grid {
-        display: block;
-        max-width: 1460px;
-        margin: 0 auto;
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: -60px 0 auto;
+        z-index: -1;
+        height: 640px;
+        background-image: radial-gradient(rgba(16, 19, 24, 0.09) 1px, transparent 1px);
+        background-size: 22px 22px;
+        -webkit-mask-image: radial-gradient(ellipse 60% 70% at 80% 20%, #000 10%, transparent 70%);
+        mask-image: radial-gradient(ellipse 60% 70% at 80% 20%, #000 10%, transparent 70%);
+        pointer-events: none;
       }
 
-      .hero-copy-block {
-        max-width: 1120px;
-        margin: 0 auto;
-        text-align: center;
+      .eyebrow {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+
+      .eyebrow a {
+        color: var(--ink-2);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .eyebrow a:hover {
+        border-bottom-color: var(--ink-2);
+      }
+
+      .eyebrow .sep {
+        color: var(--line-strong);
       }
 
       h1 {
         margin: 0;
-        font-size: clamp(88px, 17vw, 224px);
-        line-height: 0.78;
-        letter-spacing: 0;
-        text-align: center;
+        font-weight: 600;
       }
 
-      .eagg-word {
-        display: inline-block;
-        margin: 0 auto;
-        color: transparent;
-        background:
-          linear-gradient(90deg, #0d8fd3 0%, #39aee2 34%, #f8fafd 50%, #ef7780 66%, #cc2f46 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        filter: drop-shadow(0 20px 34px rgba(15, 23, 32, 0.18));
+      .wordmark {
+        display: block;
+        font-size: clamp(64px, 11vw, 132px);
+        font-weight: 650;
+        line-height: 0.9;
+        letter-spacing: -0.05em;
       }
 
-      .subtitle {
-        max-width: 1040px;
-        margin: 22px auto 0;
-        color: #17212d;
-        font-size: clamp(27px, 3.7vw, 58px);
-        font-weight: 850;
-        line-height: 1.02;
+      .title {
+        display: block;
+        max-width: 26ch;
+        margin-top: 22px;
+        color: var(--ink-2);
+        font-size: clamp(24px, 3.1vw, 38px);
+        font-weight: 500;
+        line-height: 1.18;
+        letter-spacing: -0.022em;
       }
 
       .authors {
-        max-width: 920px;
-        margin: 22px auto 0;
-        color: #334255;
-        font-size: clamp(16px, 1.45vw, 20px);
-        font-weight: 640;
-      }
-
-      .hero-copy {
-        max-width: 860px;
-        margin: 18px auto 0;
-        color: #52606f;
-        font-size: clamp(16px, 1.4vw, 19px);
-      }
-
-      .action-row {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
-        gap: 11px;
-        margin-top: 26px;
+        gap: 4px 0;
+        max-width: 760px;
+        margin: 28px 0 0;
+        padding: 0;
+        color: var(--ink-2);
+        font-size: 16.5px;
+        list-style: none;
       }
 
-      .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 40px;
-        padding: 9px 16px;
-        border: 1px solid rgba(15, 23, 32, 0.12);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.76);
-        color: #151c25;
-        font-size: 14px;
-        font-weight: 850;
-        box-shadow: 0 8px 22px rgba(15, 23, 32, 0.09);
-        transition:
-          transform 160ms ease,
-          box-shadow 160ms ease,
-          background 160ms ease;
+      .authors li:not(:last-child)::after {
+        content: ",";
+        margin-right: 0.45em;
       }
 
-      .button:hover {
-        transform: translateY(-2px);
-        background: #fff;
-        box-shadow: 0 14px 30px rgba(15, 23, 32, 0.13);
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 32px;
       }
 
-      .button.primary {
-        border: 0;
-        background: #101820;
-        color: #fff;
+      .teaser {
+        margin: clamp(48px, 7vw, 80px) 0 0;
       }
 
-      .hero-visual {
-        position: relative;
-        max-width: min(1460px, 96vw);
-        margin: clamp(34px, 5vw, 58px) auto 0;
-      }
-
-      .hero-card {
-        position: relative;
+      .frame {
         overflow: hidden;
-        border: 0;
-        border-radius: 24px;
-        background: transparent;
-        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
       }
 
-      .hero-card img {
-        width: 100%;
-        height: auto;
-        object-fit: initial;
+      .frame-pad {
+        padding: clamp(8px, 1.6vw, 20px);
       }
 
-      .hero-card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.12));
+      figcaption,
+      .caption {
+        max-width: 78ch;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.55;
       }
 
-      .visual-caption {
-        position: absolute;
-        right: 26px;
-        bottom: 24px;
-        z-index: 2;
-        max-width: 410px;
-        padding: 15px 17px;
-        border: 1px solid rgba(255, 255, 255, 0.56);
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.82);
-        color: #283544;
-        font-size: 14px;
-        font-weight: 720;
-        box-shadow: 0 12px 28px rgba(15, 23, 32, 0.12);
-        backdrop-filter: blur(12px);
+      figcaption b,
+      .caption b {
+        color: var(--ink-2);
+        font-weight: 600;
       }
 
-      main {
-        position: relative;
-        z-index: 1;
+      /* Key numbers */
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin: clamp(48px, 7vw, 80px) 0 0;
+        border-block: 1px solid var(--line);
       }
 
-      section {
-        padding: 70px clamp(18px, 4vw, 58px);
+      .stat {
+        padding: 28px 24px 28px 0;
       }
 
-      .section-inner {
-        max-width: 1220px;
-        margin: 0 auto;
+      .stat + .stat {
+        padding-left: 24px;
+        border-left: 1px solid var(--line);
+      }
+
+      .stat dt {
+        margin: 0;
+        font-size: clamp(30px, 3.4vw, 42px);
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.035em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .stat dt small {
+        margin-left: 2px;
+        color: var(--muted);
+        font-size: 0.5em;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+
+      .stat dd {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.5;
+      }
+
+      /* Sections */
+
+      main > section {
+        padding-block: clamp(72px, 10vw, 120px) 0;
       }
 
       .section-head {
         display: grid;
-        grid-template-columns: minmax(0, 0.58fr) minmax(0, 0.42fr);
-        gap: 28px;
-        align-items: end;
-        margin-bottom: 24px;
+        grid-template-columns: var(--rail) minmax(0, 1fr);
+        gap: 12px 48px;
+        align-items: start;
+        margin-bottom: clamp(32px, 4vw, 48px);
       }
 
-      .kicker {
-        margin: 0 0 8px;
-        color: var(--red-deep);
-        font-size: 13px;
-        font-weight: 930;
+      .label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        padding-top: 0.55em;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
 
+      .label::before {
+        content: "";
+        width: 18px;
+        height: 1px;
+        background: currentColor;
+      }
+
       h2 {
+        max-width: 24ch;
         margin: 0;
-        color: #101820;
-        font-size: clamp(30px, 4vw, 58px);
-        line-height: 1;
-        letter-spacing: 0;
+        font-size: clamp(28px, 3.4vw, 42px);
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -0.028em;
       }
 
-      .section-note {
-        margin: 0;
-        color: var(--muted);
-        font-size: 17px;
+      .lead {
+        max-width: 64ch;
+        margin: 16px 0 0;
+        color: var(--ink-2);
+        font-size: 17.5px;
       }
 
-      .info-strip {
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+      }
+
+      .sub {
+        margin-top: clamp(56px, 7vw, 88px);
+      }
+
+      .sub-head {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1px;
+        grid-template-columns: var(--rail) minmax(0, 1fr);
+        gap: 8px 48px;
+        margin-bottom: 28px;
+      }
+
+      .sub-head > div {
+        grid-column: 2;
+      }
+
+      .sub-head p {
+        max-width: 66ch;
+        margin: 8px 0 0;
+        color: var(--ink-2);
+      }
+
+      /* Video */
+
+      .video {
+        position: relative;
         overflow: hidden;
-        border: 1px solid rgba(15, 23, 32, 0.11);
-        border-radius: 22px;
-        background: rgba(15, 23, 32, 0.1);
-        box-shadow: 0 20px 54px rgba(15, 23, 32, 0.11);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        aspect-ratio: 16 / 9;
       }
 
-      .info-card {
-        min-height: 132px;
-        padding: 22px;
-        background: rgba(255, 255, 255, 0.83);
-        backdrop-filter: blur(16px);
+      .video video,
+      .video-loader,
+      .video-loader img {
+        width: 100%;
+        height: 100%;
       }
 
-      .info-card strong {
-        display: block;
-        margin-bottom: 8px;
-        color: #101820;
-        font-size: 18px;
-      }
-
-      .info-card span {
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      .video-section {
-        padding-top: 36px;
-      }
-
-      .video-frame {
-        overflow: hidden;
-        border: 1px solid rgba(15, 23, 32, 0.12);
-        border-radius: 24px;
-        background: #101820;
-        box-shadow: var(--shadow);
+      .video video {
+        background: #0d0f12;
       }
 
       .video-loader {
         position: relative;
-        display: grid;
-        width: 100%;
+        display: block;
         padding: 0;
         border: 0;
-        background: #101820;
+        background: #fff;
         cursor: pointer;
       }
 
       .video-loader img {
-        width: 100%;
-        aspect-ratio: 16 / 9;
         object-fit: cover;
+        transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 300ms ease;
       }
 
-      .video-loader::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(16, 24, 32, 0.05), rgba(16, 24, 32, 0.35));
+      .video-loader:hover img {
+        transform: scale(1.015);
       }
 
-      .play-control {
+      .play {
         position: absolute;
         left: 50%;
         top: 50%;
-        z-index: 2;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 96px;
-        height: 96px;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: clamp(64px, 8vw, 84px);
+        aspect-ratio: 1;
         border-radius: 50%;
-        background:
-          linear-gradient(90deg, rgba(21, 146, 209, 0.95), rgba(255, 255, 255, 0.95) 50%, rgba(214, 76, 85, 0.95));
-        color: #101820;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.27);
+        background: var(--ink);
+        color: #fff;
+        box-shadow: 0 12px 32px rgba(16, 19, 24, 0.28);
         transform: translate(-50%, -50%);
+        transition: transform 200ms ease;
       }
 
-      .play-control::before {
-        content: "";
-        width: 0;
-        height: 0;
-        margin-left: 7px;
-        border-top: 17px solid transparent;
-        border-bottom: 17px solid transparent;
-        border-left: 27px solid currentColor;
+      .play svg {
+        width: 34%;
+        margin-left: 6%;
       }
 
-      .video-frame video {
+      .video-loader:hover .play {
+        transform: translate(-50%, -50%) scale(1.06);
+      }
+
+      /* Abstract */
+
+      .abstract {
+        max-width: 68ch;
+        color: var(--ink-2);
+        font-size: 18px;
+        line-height: 1.72;
+      }
+
+      .abstract p {
+        margin: 0 0 1.1em;
+      }
+
+      .abstract p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Zoomable figures */
+
+      .zoom {
+        position: relative;
+        display: block;
         width: 100%;
-        aspect-ratio: 16 / 9;
-        background: #101820;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: zoom-in;
       }
 
-      .abstract-panel {
+      .zoom-hint {
+        position: absolute;
+        right: 12px;
+        top: 12px;
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.44fr);
-        gap: 24px;
-        align-items: stretch;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink-2);
+        opacity: 0;
+        transition: opacity 150ms ease;
       }
 
-      .abstract-copy,
-      .metric-panel {
-        border: 1px solid rgba(15, 23, 32, 0.11);
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.83);
-        box-shadow: 0 18px 50px rgba(15, 23, 32, 0.1);
-        backdrop-filter: blur(16px);
+      .zoom-hint svg {
+        width: 16px;
+        height: 16px;
       }
 
-      .abstract-copy {
-        padding: clamp(24px, 4vw, 42px);
-        color: #2b3744;
-        font-size: 19px;
+      .zoom:hover .zoom-hint,
+      .zoom:focus-visible .zoom-hint {
+        opacity: 1;
       }
 
-      .abstract-copy p {
-        margin: 0 0 18px;
-      }
+      /* Method */
 
-      .metric-panel {
+      .components {
         display: grid;
-        align-content: stretch;
-        overflow: hidden;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 28px 0 0;
+        padding: 0;
+        list-style: none;
       }
 
-      .metric {
-        padding: 24px;
-        border-bottom: 1px solid rgba(15, 23, 32, 0.09);
+      .component {
+        padding: 22px 22px 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
       }
 
-      .metric:last-child {
+      .component .num {
+        display: block;
+        margin-bottom: 18px;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .component h3 {
+        font-size: 16.5px;
+        line-height: 1.3;
+      }
+
+      .component p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.55;
+      }
+
+      /* Results */
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+        gap: clamp(24px, 4vw, 48px);
+        align-items: start;
+      }
+
+      .figure,
+      .split > figure {
+        margin: 0;
+      }
+
+      .table-block + .table-block {
+        margin-top: 28px;
+      }
+
+      .table-title {
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+
+      table {
+        width: 100%;
+        min-width: 480px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      thead th {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        background: #fbfbf9;
+      }
+
+      tbody tr:last-child td {
         border-bottom: 0;
       }
 
-      .metric b {
-        display: block;
-        color: transparent;
-        background: linear-gradient(90deg, var(--blue-deep), var(--red-deep));
-        background-clip: text;
-        -webkit-background-clip: text;
-        font-size: clamp(32px, 4vw, 54px);
-        line-height: 1;
+      td {
+        font-variant-numeric: tabular-nums;
       }
 
-      .metric span {
-        display: block;
-        margin-top: 8px;
-        color: #536170;
-        font-size: 14px;
-        font-weight: 720;
+      th abbr {
+        text-decoration: none;
+        cursor: help;
       }
 
-      .figure-panel {
-        overflow: hidden;
-        border: 1px solid rgba(15, 23, 32, 0.12);
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.82);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(16px);
+      tr.highlight td {
+        background: var(--accent-soft);
       }
 
-      .figure-panel img {
-        width: 100%;
+      tr.highlight td:first-child {
+        box-shadow: inset 3px 0 0 var(--accent);
       }
 
-      .figure-caption {
-        padding: 16px 20px 19px;
-        color: #536170;
-        font-size: 14px;
+      tr.group-start td {
+        border-top: 1px solid var(--line-strong);
       }
 
-      .results-grid {
+      td.row-group {
+        color: var(--ink);
+        font-weight: 600;
+        vertical-align: top;
+      }
+
+      details.more {
+        margin-top: 16px;
+      }
+
+      details.more summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ink-2);
+        font-size: 14.5px;
+        font-weight: 500;
+        cursor: pointer;
+        list-style: none;
+      }
+
+      details.more summary::-webkit-details-marker {
+        display: none;
+      }
+
+      details.more summary svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 200ms ease;
+      }
+
+      details.more[open] summary svg {
+        transform: rotate(90deg);
+      }
+
+      details.more .table-scroll {
+        margin-top: 12px;
+      }
+
+      .legend {
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .legend abbr {
+        color: var(--ink-2);
+        font-family: var(--mono);
+        font-size: 12.5px;
+        text-decoration: none;
+      }
+
+      .hardware {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
       }
 
-      .result-card {
+      .hw {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 20px 22px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+
+      .hw-name {
+        color: var(--ink-2);
+        font-size: 14.5px;
+        font-weight: 500;
+      }
+
+      .hw-rate {
+        margin-top: 10px;
+        font-size: 34px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.035em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .hw-rate small {
+        margin-left: 2px;
+        color: var(--muted);
+        font-size: 0.5em;
+        font-weight: 500;
+      }
+
+      .hw-meta {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .bar {
+        height: 4px;
+        margin-top: 14px;
         overflow: hidden;
-        border: 1px solid rgba(15, 23, 32, 0.12);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.84);
-        box-shadow: 0 18px 42px rgba(15, 23, 32, 0.11);
-        backdrop-filter: blur(16px);
+        border-radius: 99px;
+        background: #efefeb;
       }
 
-      .result-card img {
-        width: 100%;
-        aspect-ratio: 16 / 10;
-        object-fit: cover;
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--accent);
       }
 
-      .result-card.tall img {
-        aspect-ratio: 16 / 11;
-        object-position: 50% 18%;
+      /* Explorer */
+
+      .explorer {
+        padding: clamp(16px, 2.4vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: calc(var(--radius) + 4px);
+        background: var(--surface);
       }
 
-      .result-body {
-        padding: 18px 20px 20px;
+      .stage-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 6px 16px;
+        margin-bottom: 16px;
       }
 
-      .result-body h3 {
-        margin: 0 0 7px;
-        color: #101820;
-        font-size: 20px;
+      .stage-title {
+        margin: 0;
+        font-size: clamp(20px, 2.2vw, 26px);
+        font-weight: 600;
+        letter-spacing: -0.02em;
       }
 
-      .result-body p {
+      .stage-title .x {
+        margin: 0 0.1em;
+        color: var(--line-strong);
+        font-weight: 400;
+      }
+
+      .stage-sub {
         margin: 0;
         color: var(--muted);
-        font-size: 15px;
+        font-family: var(--mono);
+        font-size: 12.5px;
       }
 
-      .links-panel,
-      .citation-panel {
-        border: 1px solid rgba(15, 23, 32, 0.12);
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.86);
-        box-shadow: 0 18px 42px rgba(15, 23, 32, 0.1);
-        backdrop-filter: blur(16px);
+      .stage {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
       }
 
-      .links-panel {
+      .shot {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: #fff;
+      }
+
+      .shot img,
+      .tile img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: contain;
+        background: #fff;
+        transition: opacity 220ms ease;
+      }
+
+      .shot img.is-loading,
+      .tile img.is-loading {
+        opacity: 0.35;
+      }
+
+      .rank {
+        position: absolute;
+        left: 12px;
+        top: 10px;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .rank b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      .picker {
+        margin-top: 28px;
+      }
+
+      .picker-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+        margin-bottom: 12px;
+      }
+
+      .picker-head h3 {
+        font-size: 14.5px;
+      }
+
+      .picker-head p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .strip {
+        --gap: 8px;
+        position: relative;
+        display: flex;
+        gap: var(--gap);
+        margin: 0;
+        padding: 2px 2px 6px;
+        overflow-x: auto;
+        list-style: none;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+      }
+
+      .strip li {
+        flex: 0 0 calc((100% - 10 * var(--gap)) / 11);
+        min-width: 0;
+        scroll-snap-align: start;
+      }
+
+      .tile {
+        display: block;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: none;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .tile-img {
+        display: block;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+      }
+
+      .tile:hover .tile-img {
+        border-color: var(--line-strong);
+      }
+
+      .tile[aria-pressed="true"] .tile-img {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent);
+      }
+
+      .tile-name {
+        display: block;
+        margin-top: 7px;
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.3;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .tile[aria-pressed="true"] .tile-name {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      /* Resources */
+
+      .resources {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1px;
-        overflow: hidden;
-        background: rgba(15, 23, 32, 0.1);
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
       }
 
-      .resource-link {
-        min-height: 142px;
+      .resource {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
         padding: 22px;
-        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        text-decoration: none;
+        transition: border-color 150ms ease, transform 150ms ease;
       }
 
-      .resource-link strong {
-        display: block;
-        margin-bottom: 8px;
-        color: #101820;
-        font-size: 20px;
+      .resource:hover {
+        border-color: var(--line-strong);
+        transform: translateY(-2px);
       }
 
-      .resource-link span {
+      .resource-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        color: var(--ink-2);
+      }
+
+      .resource-top svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .resource-top .arrow {
+        width: 16px;
+        height: 16px;
+        color: var(--muted);
+        transition: transform 150ms ease, color 150ms ease;
+      }
+
+      .resource:hover .arrow {
+        color: var(--ink);
+        transform: translate(2px, -2px);
+      }
+
+      .resource strong {
+        font-size: 16.5px;
+        font-weight: 600;
+      }
+
+      .resource span {
+        margin-top: 4px;
         color: var(--muted);
         font-size: 14px;
       }
 
-      .citation-panel {
-        overflow: hidden;
-        max-width: 980px;
-        margin: 0 auto;
+      /* Citation */
+
+      .bibtex {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
       }
 
-      .citation-panel h3 {
+      .bibtex pre {
         margin: 0;
-        padding: 18px 20px 0;
-        color: #101820;
-        font-size: 20px;
-      }
-
-      pre {
-        margin: 0;
+        padding: 22px 24px;
         overflow-x: auto;
-        padding: 16px 20px 20px;
-        color: #2f3b49;
-        font-size: 12px;
-        line-height: 1.48;
+        color: var(--ink-2);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.7;
       }
+
+      .copy {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+      }
+
+      /* Footer */
 
       footer {
-        padding: 34px clamp(18px, 4vw, 58px);
-        color: #697789;
-        text-align: center;
+        margin-top: clamp(72px, 10vw, 120px);
+        border-top: 1px solid var(--line);
+      }
+
+      .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px 24px;
+        padding-block: 28px 36px;
+        color: var(--muted);
         font-size: 14px;
       }
 
-      @media (max-width: 1020px) {
+      .footer-inner nav {
+        display: flex;
+        gap: 20px;
+      }
+
+      .footer-inner a {
+        text-decoration: none;
+      }
+
+      .footer-inner a:hover {
+        color: var(--ink);
+      }
+
+      /* Lightbox */
+
+      .lightbox {
+        max-width: min(1600px, 96vw);
+        max-height: 94vh;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        overflow: visible;
+      }
+
+      .lightbox::backdrop {
+        background: rgba(12, 14, 18, 0.84);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+      }
+
+      .lightbox img {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 10px;
+        background: #fff;
+        object-fit: contain;
+        cursor: zoom-out;
+      }
+
+      .lightbox-close {
+        position: fixed;
+        right: 16px;
+        top: 16px;
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .lightbox-close svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* Responsive */
+
+      @media (max-width: 1000px) {
+        .nav-links {
+          display: none;
+        }
+
+        .nav-actions {
+          margin-left: auto;
+        }
+
         .section-head,
-        .abstract-panel {
-          grid-template-columns: 1fr;
+        .sub-head {
+          grid-template-columns: minmax(0, 1fr);
         }
 
-        .hero-copy,
-        .authors,
-        .subtitle {
-          max-width: none;
+        .sub-head > div {
+          grid-column: auto;
         }
 
-        .info-strip {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 760px) {
-        .hero {
-          padding-top: 44px;
+        .label {
+          padding-top: 0;
         }
 
-        .visual-caption {
-          position: static;
-          max-width: none;
-          border-radius: 0;
-          border-width: 1px 0 0;
-          box-shadow: none;
-        }
-
-        .info-strip,
-        .links-panel,
-        .results-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .play-control {
-          width: 72px;
-          height: 72px;
-        }
-      }
-
-      @media (max-width: 520px) {
-        section {
-          padding: 52px 16px;
-        }
-
-        .hero {
-          padding-left: 16px;
-          padding-right: 16px;
-        }
-
-        .action-row {
-          display: grid;
+        .stats {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .button {
-          min-width: 0;
-          padding-left: 10px;
-          padding-right: 10px;
+        .stat:nth-child(3) {
+          padding-left: 0;
+          border-left: 0;
         }
 
-        .hero-card,
-        .video-frame,
-        .figure-panel,
-        .abstract-copy,
-        .metric-panel,
-        .result-card,
-        .links-panel,
-        .citation-panel,
-        .info-strip {
-          border-radius: 18px;
+        .stat:nth-child(n + 3) {
+          border-top: 1px solid var(--line);
+        }
+
+        .components,
+        .resources {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .split {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .split > figure {
+          max-width: 620px;
+        }
+
+        .strip li {
+          flex-basis: 96px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .stats {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .stat,
+        .stat + .stat,
+        .stat:nth-child(3) {
+          padding: 22px 0;
+          border-left: 0;
+        }
+
+        .stat + .stat {
+          border-top: 1px solid var(--line);
+        }
+
+        .components,
+        .resources,
+        .hardware {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .stage {
+          gap: 8px;
+        }
+
+        .rank {
+          left: 8px;
+          top: 6px;
+          font-size: 11px;
+        }
+
+        .strip li {
+          flex-basis: 84px;
+        }
+
+        .actions .btn {
+          flex: 1 1 calc(50% - 5px);
+        }
+
+        .nav-actions .btn-label {
+          display: none;
+        }
+
+        .nav-actions .btn-sm {
+          width: 36px;
+          padding: 0;
+        }
+
+        .bibtex pre {
+          padding-top: 60px;
         }
       }
 
@@ -648,274 +1305,606 @@
           scroll-behavior: auto;
         }
 
-        .button {
-          transition: none;
+        *,
+        *::before,
+        *::after {
+          transition: none !important;
         }
       }
     </style>
   </head>
   <body>
-    <canvas class="ripple-canvas" data-ripple-canvas aria-hidden="true"></canvas>
+    <a class="skip-link" href="#main">Skip to content</a>
 
-    <section class="hero" id="top">
-      <div class="hero-grid">
-        <div class="hero-copy-block">
-          <h1><span class="eagg-word">EAGG</span></h1>
-          <p class="subtitle">
-            Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning
-          </p>
-          <p class="authors">
-            Wanhao Niu, Qiyan Ke, Yuan Sun, Hao Sun, Jie Xu, Muyuan Ma, Ruiqi Hu, and Fuchun Sun
-          </p>
-          <p class="hero-copy">
-            A unified generator for object-conditioned grasp synthesis across heterogeneous
-            robotic hands and grippers, aligned through embodiment topology and articulated geometry.
-          </p>
-          <div class="action-row" aria-label="Project links">
-            <a class="button primary" href="https://arxiv.org/abs/2606.18092">Paper</a>
-            <a class="button" href="https://github.com/wanhaoniu/EAGG">Code</a>
-            <a class="button" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">Checkpoints</a>
-            <a class="button" href="#video">Watch Video</a>
-          </div>
-        </div>
-
-        <div class="hero-visual">
-          <div class="hero-card">
-            <img src="assets/fig1.jpg" alt="EAGG cross-end-effector grasp generation overview">
-            <div class="visual-caption">
-              Multi-object inputs and multi-hand inputs converge into EAGG, then branch into
-              cross-object and cross-hand grasp generation.
-            </div>
-          </div>
+    <header class="topbar" data-topbar>
+      <div class="wrap topbar-inner">
+        <a class="brand" href="#top" aria-label="EAGG, back to top">
+          <span class="brand-mark" aria-hidden="true"></span>
+          EAGG
+        </a>
+        <nav aria-label="Sections">
+          <ul class="nav-links">
+            <li><a href="#video">Video</a></li>
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#method">Method</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#explorer">Explorer</a></li>
+            <li><a href="#citation">Citation</a></li>
+          </ul>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-sm" href="https://arxiv.org/abs/2606.18092" aria-label="Paper on arXiv">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+            <span class="btn-label">Paper</span>
+          </a>
+          <a class="btn btn-sm" href="https://github.com/wanhaoniu/EAGG" aria-label="Code on GitHub">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span class="btn-label">Code</span>
+          </a>
         </div>
       </div>
-    </section>
+    </header>
 
-    <main>
-      <section id="overview">
-        <div class="section-inner">
-          <div class="info-strip" aria-label="EAGG project summary">
-            <article class="info-card">
-              <strong>Unified Generator</strong>
-              <span>One model operates across heterogeneous end effectors without a shared raw joint parameterization.</span>
-            </article>
-            <article class="info-card">
-              <strong>Embodiment Graph</strong>
-              <span>Topology-aware conditioning preserves kinematic structure and morphology-specific coupling.</span>
-            </article>
-            <article class="info-card">
-              <strong>Geometry Injection</strong>
-              <span>End-effector tokens are refreshed during sampling as articulated geometry evolves.</span>
-            </article>
-            <article class="info-card">
-              <strong>Hardware Transfer</strong>
-              <span>Evaluated in simulation and real-world setups across hands, grippers, and object groups.</span>
-            </article>
-          </div>
+    <div class="hero" id="top">
+      <div class="wrap">
+        <p class="eyebrow">
+          <a href="https://arxiv.org/abs/2606.18092">arXiv:2606.18092</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <span>cs.RO</span>
+          <span class="sep" aria-hidden="true">/</span>
+          <span>2026</span>
+        </p>
+        <h1>
+          <span class="wordmark">EAGG</span>
+          <span class="title">Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning</span>
+        </h1>
+        <ul class="authors" aria-label="Authors">
+          <li>Wanhao Niu</li>
+          <li>Qiyan Ke</li>
+          <li>Yuan Sun</li>
+          <li>Hao Sun</li>
+          <li>Jie Xu</li>
+          <li>Muyuan Ma</li>
+          <li>Ruiqi Hu</li>
+          <li>Fuchun Sun</li>
+        </ul>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://arxiv.org/abs/2606.18092">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+            Paper
+          </a>
+          <a class="btn" href="https://github.com/wanhaoniu/EAGG">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            Code
+          </a>
+          <a class="btn" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Checkpoints
+          </a>
+          <a class="btn" href="#video">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.8v6.4l5.2-3.2z" fill="currentColor"/></svg>
+            Video
+          </a>
         </div>
-      </section>
 
-      <section class="video-section" id="video">
-        <div class="section-inner">
-          <div class="section-head">
-            <div>
-              <p class="kicker">Demo</p>
-              <h2>Watch EAGG move across embodiments.</h2>
-            </div>
-            <p class="section-note">
-              The video summarizes generated grasps, cross-end-effector behavior, and the visual
-              result of geometry-aware conditioning.
-            </p>
+        <figure class="teaser">
+          <div class="frame frame-pad">
+            <button class="zoom" type="button" data-zoom="assets/fig1.jpg" aria-label="Enlarge teaser figure">
+              <img src="assets/fig1.jpg" width="1120" height="715" alt="Overview: multi-object and multi-hand inputs, including novel objects and hands, are encoded as object and hand tokens into EAGG, which produces grasps on a shared grasp manifold that generalize across objects and across hands." fetchpriority="high">
+            </button>
           </div>
-          <div class="video-frame" data-video-shell>
+          <figcaption>
+            <b>One generator, two axes of generalization.</b> Object tokens and hand tokens meet in a
+            shared grasp manifold, so the same model produces grasps for new objects and for new end effectors.
+          </figcaption>
+        </figure>
+
+        <dl class="stats" aria-label="Key results">
+          <div class="stat">
+            <dt>56.17<small>%</small></dt>
+            <dd>Average success across six training end effectors with one unified model.</dd>
+          </div>
+          <div class="stat">
+            <dt>1.10<small>pp</small></dt>
+            <dd>Gap to specialized, per-embodiment training on the same end effectors.</dd>
+          </div>
+          <div class="stat">
+            <dt>0.189<small>cm</small></dt>
+            <dd>Pooled median contact distance with iterative geometry injection, down from 0.239&nbsp;cm.</dd>
+          </div>
+          <div class="stat">
+            <dt>89–95<small>%</small></dt>
+            <dd>Real-world success on three hardware setups, from a five-finger hand to a parallel gripper.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <main id="main">
+      <section id="video" aria-labelledby="video-title">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="label">Video</p>
+            <div>
+              <h2 id="video-title">See EAGG move across objects and embodiments.</h2>
+              <p class="lead">
+                Generated grasps, cross-end-effector transfer, and the effect of geometry-aware conditioning.
+              </p>
+            </div>
+          </div>
+          <div class="video" data-video-shell>
             <button
               class="video-loader"
               type="button"
               data-video-loader
               data-video-src="assets/eagg_demo.mp4"
-              aria-label="Load and play the EAGG overview video"
+              aria-label="Play the EAGG overview video"
             >
-              <img src="assets/eagg_poster.jpg" alt="EAGG overview video preview" loading="lazy">
-              <span class="play-control" aria-hidden="true"></span>
+              <img src="assets/eagg_poster.jpg" width="1280" height="720" alt="" loading="lazy">
+              <span class="play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L7.5 3.64A1 1 0 0 0 6 4.5z"/></svg>
+              </span>
             </button>
             <noscript>
               <video controls preload="none" poster="assets/eagg_poster.jpg">
                 <source src="assets/eagg_demo.mp4" type="video/mp4">
-                Your browser does not support the video tag.
               </video>
             </noscript>
           </div>
         </div>
       </section>
 
-      <section id="abstract">
-        <div class="section-inner">
+      <section id="abstract" aria-label="Abstract">
+        <div class="wrap">
           <div class="section-head">
-            <div>
-              <p class="kicker">Abstract</p>
-              <h2>Align embodiment structure instead of hiding it.</h2>
-            </div>
-            <p class="section-note">
-              EAGG treats embodiment as a geometric and topological signal, not a static label.
-            </p>
-          </div>
-          <div class="abstract-panel">
-            <div class="abstract-copy">
+            <p class="label">Abstract</p>
+            <div class="abstract">
               <p>
-                Cross-end-effector grasp generation seeks a single model that can synthesize
-                grasps for heterogeneous end effectors while preserving generalization across
-                novel objects. Existing generators are typically designed for fixed embodiments
-                or encode embodiment identity with static labels, weakening transfer when
-                topology, actuation coupling, and contact geometry differ.
+                Cross-end-effector grasp generation seeks a unified model that generalizes across objects
+                and across embodiments ranging from parallel grippers to dexterous end effectors. Existing
+                grasp generators are typically designed for a fixed embodiment or encode embodiment identity
+                with a static descriptor, which weakens transfer when topology, actuation coupling, and
+                contact geometry differ substantially.
               </p>
               <p>
-                EAGG addresses this with an embodiment-aligned representation: each end effector
-                keeps a topology-aware graph and a PCA-based low-dimensional control space. A
-                frozen end-effector-cognition backbone converts articulated states into
-                geometry-aware tokens, while iterative geometry injection keeps conditioning
-                synchronized with the evolving grasp.
+                We present EAGG, an embodiment-aligned grasp generator that represents each embodiment with
+                a topology-aware end-effector graph and an embodiment-specific low-dimensional end-effector
+                control space. A frozen end-effector-cognition backbone converts the current articulated
+                state into geometry-aware tokens that act as a reusable morphology prior, and iterative
+                geometry injection refreshes these tokens throughout sampling so that conditioning remains
+                synchronized with the evolving end-effector geometry.
+              </p>
+              <p>
+                On the MultiGripperGrasp benchmark, EAGG reaches 56.17% average success across six training
+                end effectors, remaining within 1.10 percentage points of specialized training while
+                preserving transfer to finetuning and zero-shot end effectors. Iterative geometry injection
+                further reduces the pooled median contact distance from 0.239&nbsp;cm to 0.189&nbsp;cm. These
+                results show that cross-end-effector grasp generation is strengthened by aligning embodiment
+                structure inside a shared generator rather than suppressing embodiment differences.
               </p>
             </div>
-            <aside class="metric-panel" aria-label="Key quantitative highlights">
-              <div class="metric">
-                <b>56.17%</b>
-                <span>average success across six training end effectors in the unified setting</span>
-              </div>
-              <div class="metric">
-                <b>1.10</b>
-                <span>points from specialized training while preserving transfer ability</span>
-              </div>
-              <div class="metric">
-                <b>0.189cm</b>
-                <span>pooled median contact distance after IGI refinement</span>
-              </div>
-            </aside>
           </div>
         </div>
       </section>
 
-      <section id="method">
-        <div class="section-inner">
+      <section id="method" aria-labelledby="method-title">
+        <div class="wrap">
           <div class="section-head">
+            <p class="label">Method</p>
             <div>
-              <p class="kicker">Method</p>
-              <h2>Graph-conditioned generation with geometry refreshed in the loop.</h2>
+              <h2 id="method-title">Align embodiment structure instead of suppressing it.</h2>
+              <p class="lead">
+                Hands and grippers differ in topology, actuation coupling, and contact geometry, so a static
+                label is not enough. EAGG keeps those differences explicit and turns the current articulated
+                geometry into tokens that a shared transformer reads at every denoising step.
+              </p>
             </div>
-            <p class="section-note">
-              Object tokens, grasp tokens, and end-effector tokens meet inside a transformer
-              generator conditioned by morphology-aware structure.
-            </p>
           </div>
-          <figure class="figure-panel">
-            <img src="assets/method_full.jpg" alt="EAGG method overview diagram" loading="lazy">
-            <figcaption class="figure-caption">
-              EAGG encodes object geometry and end-effector geometry, injects topology-aware
-              conditioning, and updates hand/gripper features throughout denoising.
+
+          <figure class="figure">
+            <div class="frame frame-pad">
+              <button class="zoom" type="button" data-zoom="assets/method_full.jpg" aria-label="Enlarge method figure">
+                <img src="assets/method_full.jpg" width="1800" height="1124" loading="lazy" alt="EAGG architecture: object point clouds pass through positional embedding and an object encoder to form object tokens; a hand graph passes through a GNN and the end-effector cognition backbone to form hand tokens; a transformer backbone denoises grasp tokens from noise to a clean grasp, and the IGI loop re-poses the hand point cloud to refresh the hand tokens at each step.">
+                <span class="zoom-hint" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                </span>
+              </button>
+            </div>
+            <figcaption>
+              <b>Architecture.</b> Object points become object tokens <i>Z<sub>O</sub></i>. The hand graph
+              <i>G<sub>h</sub></i> passes through a GNN and the frozen end-effector-cognition backbone
+              <i>Φ<sub>E</sub></i> to give hand tokens. The transformer <i>Ψ</i> denoises the grasp from
+              <i>x</i><sub>1</sub> to <i>x</i><sub>0</sub>, and the IGI loop re-poses the hand point cloud
+              with the current estimate <i>x<sub>t</sub></i> to refresh the hand tokens at every step.
             </figcaption>
           </figure>
+
+          <ol class="components">
+            <li class="component">
+              <span class="num">01</span>
+              <h3>Embodiment-specific control basis</h3>
+              <p>Each end effector keeps its own PCA-based low-dimensional control space instead of sharing one raw joint parameterization.</p>
+            </li>
+            <li class="component">
+              <span class="num">02</span>
+              <h3>Topology-aware end-effector graph</h3>
+              <p>Preserves kinematic organization, actuation coupling, and embodiment-specific structure.</p>
+            </li>
+            <li class="component">
+              <span class="num">03</span>
+              <h3>Frozen end-effector-cognition backbone</h3>
+              <p>Turns the current articulated state into geometry-aware tokens, a reusable morphology prior.</p>
+            </li>
+            <li class="component">
+              <span class="num">04</span>
+              <h3>Iterative geometry injection</h3>
+              <p>Refreshes the end-effector tokens throughout sampling as contact and collision geometry evolve.</p>
+            </li>
+          </ol>
         </div>
       </section>
 
-      <section id="results">
-        <div class="section-inner">
+      <section id="results" aria-labelledby="results-title">
+        <div class="wrap">
           <div class="section-head">
+            <p class="label">Results</p>
             <div>
-              <p class="kicker">Results</p>
-              <h2>Cross-object, cross-hand, and hardware behavior.</h2>
+              <h2 id="results-title">One generator, from parallel grippers to dexterous hands.</h2>
+              <p class="lead">
+                Evaluated on the MultiGripperGrasp benchmark across training, finetuned, and zero-shot end
+                effectors, and executed on three real robot setups.
+              </p>
             </div>
-            <p class="section-note">
-              Results use high-resolution paper figures where possible, with lightweight
-              previews for generated grasp galleries.
-            </p>
           </div>
-          <div class="results-grid">
-            <article class="result-card tall">
-              <img src="assets/results_realworld.jpg" alt="Real-world EAGG hardware evaluation figure" loading="lazy">
-              <div class="result-body">
-                <h3>Cross-regime grasp synthesis</h3>
-                <p>Generated grasps span training, finetuned, and zero-shot end effectors across object categories.</p>
+
+          <div class="sub-head">
+            <div>
+              <h3>Simulation across regimes</h3>
+              <p>
+                A single unified model covers six training end effectors and stays within 1.10 points of
+                specialized, per-embodiment models. It then transfers to two finetuned and two zero-shot
+                end effectors.
+              </p>
+            </div>
+          </div>
+
+          <div class="split">
+            <figure>
+              <div class="frame frame-pad">
+                <button class="zoom" type="button" data-zoom="assets/results_realworld.jpg" aria-label="Enlarge simulation results figure">
+                  <img src="assets/results_realworld.jpg" width="1800" height="2182" loading="lazy" alt="Generated grasps for training end effectors (Allegro, Barrett, Franka Panda, HumanHand, Robotiq 3F, WSG-50), finetuned end effectors (Sawyer, Jaco), and zero-shot end effectors (FreedomHand, DexHand) across a set of objects.">
+                  <span class="zoom-hint" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  </span>
+                </button>
               </div>
-            </article>
-            <article class="result-card">
-              <img src="assets/ablation_summary.jpg" alt="EAGG ablation and quantitative analysis figure" loading="lazy">
-              <div class="result-body">
-                <h3>Real-world evaluation</h3>
-                <p>Hardware trials cover FreedomHand, Dahuan AG95, and SOARM 101 setups in physical scenes.</p>
+              <figcaption>
+                Generated grasps for <b>training</b> (orange), <b>finetuned</b> (blue), and
+                <b>zero-shot</b> (green) end effectors.
+              </figcaption>
+            </figure>
+
+            <div>
+              <div class="table-block">
+                <p class="table-title">Cross-regime summary</p>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Regime</th>
+                        <th scope="col"><abbr title="End effectors averaged">#EE</abbr></th>
+                        <th scope="col">SR (%)</th>
+                        <th scope="col">CD (cm)</th>
+                        <th scope="col">PD (cm)</th>
+                        <th scope="col">CC</th>
+                        <th scope="col">RGR (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="highlight">
+                        <td>Training, unified</td>
+                        <td>6</td>
+                        <td>56.17</td>
+                        <td>0.56</td>
+                        <td>1.04</td>
+                        <td>2.081</td>
+                        <td>3.16</td>
+                      </tr>
+                      <tr>
+                        <td>Training, specialized</td>
+                        <td>6</td>
+                        <td>57.27</td>
+                        <td>0.40</td>
+                        <td>0.79</td>
+                        <td>2.254</td>
+                        <td>1.21</td>
+                      </tr>
+                      <tr>
+                        <td>Held-out, adapted</td>
+                        <td>2</td>
+                        <td>36.68</td>
+                        <td>0.36</td>
+                        <td>0.62</td>
+                        <td>2.196</td>
+                        <td>3.63</td>
+                      </tr>
+                      <tr>
+                        <td>Zero-shot, adapted</td>
+                        <td>2</td>
+                        <td>33.25</td>
+                        <td>0.56</td>
+                        <td>0.67</td>
+                        <td>2.332</td>
+                        <td>0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </article>
-            <article class="result-card">
-              <img src="assets/allegro_cross_object.jpg" alt="Allegro generated grasps across objects" loading="lazy">
-              <div class="result-body">
-                <h3>Cross-object gallery</h3>
-                <p>The same embodiment is applied to multiple clean objects with ranked generated grasps.</p>
+
+              <details class="more">
+                <summary>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                  Per-end-effector comparison
+                </summary>
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">End effector</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">SR (%)</th>
+                        <th scope="col">CD (cm)</th>
+                        <th scope="col">PD (cm)</th>
+                        <th scope="col">CC</th>
+                        <th scope="col">RGR (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="row-group" rowspan="2">WSG-50</td>
+                        <td>Unified</td>
+                        <td>14.50</td>
+                        <td>0.40</td>
+                        <td>0.77</td>
+                        <td>1.262</td>
+                        <td>8.76</td>
+                      </tr>
+                      <tr>
+                        <td>Specialized</td>
+                        <td>16.22</td>
+                        <td>0.33</td>
+                        <td>0.64</td>
+                        <td>1.817</td>
+                        <td>1.73</td>
+                      </tr>
+                      <tr class="group-start">
+                        <td class="row-group" rowspan="2">Robotiq 3F</td>
+                        <td>Unified</td>
+                        <td>78.42</td>
+                        <td>1.14</td>
+                        <td>1.48</td>
+                        <td>2.512</td>
+                        <td>1.20</td>
+                      </tr>
+                      <tr>
+                        <td>Specialized</td>
+                        <td>79.26</td>
+                        <td>0.78</td>
+                        <td>1.07</td>
+                        <td>2.615</td>
+                        <td>0.18</td>
+                      </tr>
+                      <tr class="group-start">
+                        <td class="row-group" rowspan="2">Allegro</td>
+                        <td>Unified</td>
+                        <td>86.46</td>
+                        <td>0.50</td>
+                        <td>1.04</td>
+                        <td>2.564</td>
+                        <td>0.12</td>
+                      </tr>
+                      <tr>
+                        <td>Specialized</td>
+                        <td>87.59</td>
+                        <td>0.41</td>
+                        <td>0.91</td>
+                        <td>2.685</td>
+                        <td>0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+
+              <p class="legend">
+                <abbr>SR</abbr> success rate · <abbr>CD</abbr> contact distance · <abbr>PD</abbr> penetration
+                depth · <abbr>CC</abbr> contact count · <abbr>RGR</abbr> repeated grasp rate · <abbr>#EE</abbr> end effectors averaged
+              </p>
+            </div>
+          </div>
+
+          <div class="sub">
+            <div class="sub-head">
+              <div>
+                <h3>Real-world hardware</h3>
+                <p>
+                  EAGG grasps executed with a UR5 and FreedomHand, a UR5 and Dahuan AG95 gripper, and a
+                  SOARM 101 arm, on 57 objects in five groups.
+                </p>
               </div>
-            </article>
-            <article class="result-card">
-              <img src="assets/mug_cross_gripper.jpg" alt="Generated mug grasps across end effectors" loading="lazy">
-              <div class="result-body">
-                <h3>Cross-end-effector gallery</h3>
-                <p>A fixed object is paired with different released hands and grippers to show embodiment transfer.</p>
+            </div>
+
+            <figure class="figure">
+              <div class="frame frame-pad">
+                <button class="zoom" type="button" data-zoom="assets/ablation_summary.jpg" aria-label="Enlarge real-world results figure">
+                  <img src="assets/ablation_summary.jpg" width="1799" height="1113" loading="lazy" alt="Real-world results: (a) grasp generation process for FreedomHand, Dahuan AG95, and SOARM 101; (b) UR5 with FreedomHand; (c) UR5 with Dahuan AG95; (d) SOARM 101, each grasping a range of household objects.">
+                  <span class="zoom-hint" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  </span>
+                </button>
               </div>
-            </article>
+              <figcaption>
+                <b>(a)</b> Grasp generation for each end effector. <b>(b–d)</b> Executions on UR5 +
+                FreedomHand, UR5 + Dahuan AG95, and SOARM 101.
+              </figcaption>
+            </figure>
+
+            <div class="hardware" aria-label="Real-world success rates">
+              <div class="hw">
+                <span class="hw-name">UR5 + FreedomHand</span>
+                <span class="hw-rate">91.94<small>%</small></span>
+                <span class="hw-meta">62 attempts · 57 objects</span>
+                <span class="bar" aria-hidden="true"><span style="width: 91.94%"></span></span>
+              </div>
+              <div class="hw">
+                <span class="hw-name">UR5 + Dahuan AG95</span>
+                <span class="hw-rate">95.00<small>%</small></span>
+                <span class="hw-meta">60 attempts · 57 objects</span>
+                <span class="bar" aria-hidden="true"><span style="width: 95%"></span></span>
+              </div>
+              <div class="hw">
+                <span class="hw-name">SOARM 101</span>
+                <span class="hw-rate">89.06<small>%</small></span>
+                <span class="hw-meta">64 attempts · 57 objects</span>
+                <span class="bar" aria-hidden="true"><span style="width: 89.06%"></span></span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="resources">
-        <div class="section-inner">
+      <section id="explorer" aria-labelledby="explorer-title">
+        <div class="wrap">
           <div class="section-head">
+            <p class="label">Explorer</p>
             <div>
-              <p class="kicker">Resources</p>
-              <h2>Paper, code, checkpoints, and dataset.</h2>
+              <h2 id="explorer-title">Browse generated grasps.</h2>
+              <p class="lead">
+                Pick an end effector and an object. Each pair shows the top three of 256 sampled grasps
+                (10 denoising steps), ranked by geometric quality. The rows below double as galleries across
+                end effectors and across objects.
+              </p>
             </div>
-            <p class="section-note">
-              The project links stay compact and easy to scan, with citation separated below
-              for direct copying.
-            </p>
           </div>
-          <div class="links-panel">
-            <a class="resource-link" href="https://arxiv.org/abs/2606.18092">
-              <strong>Paper</strong>
-              <span>arXiv:2606.18092</span>
-            </a>
-            <a class="resource-link" href="https://github.com/wanhaoniu/EAGG">
-              <strong>Code</strong>
-              <span>Inference, training, visualization tools, assets, and configs.</span>
-            </a>
-            <a class="resource-link" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">
-              <strong>Checkpoints</strong>
-              <span>Released final and per-gripper model weights.</span>
-            </a>
-            <a class="resource-link" href="https://irvlutd.github.io/MultiGripperGrasp/">
-              <strong>MGG Dataset</strong>
-              <span>MultiGripperGrasp dataset and project reference.</span>
-            </a>
+
+          <div class="explorer" data-explorer>
+            <div class="stage-head">
+              <p class="stage-title" aria-live="polite">
+                <span data-hand-name>Allegro</span> <span class="x" aria-hidden="true">×</span> <span data-object-name>Mug</span>
+              </p>
+              <p class="stage-sub">Top 3 of 256 samples</p>
+            </div>
+            <ol class="stage" data-stage>
+              <li class="shot">
+                <img src="assets/explorer/Allegro/025_mug_1.webp" width="360" height="360" alt="Allegro grasping the mug, rank 1" loading="lazy">
+                <span class="rank"><b>#1</b></span>
+              </li>
+              <li class="shot">
+                <img src="assets/explorer/Allegro/025_mug_2.webp" width="360" height="360" alt="Allegro grasping the mug, rank 2" loading="lazy">
+                <span class="rank"><b>#2</b></span>
+              </li>
+              <li class="shot">
+                <img src="assets/explorer/Allegro/025_mug_3.webp" width="360" height="360" alt="Allegro grasping the mug, rank 3" loading="lazy">
+                <span class="rank"><b>#3</b></span>
+              </li>
+            </ol>
+
+            <div class="picker">
+              <div class="picker-head">
+                <h3 id="hand-picker">End effector</h3>
+                <p>each grasping the <span data-object-name-lower>mug</span></p>
+              </div>
+              <ul class="strip" data-hand-strip aria-labelledby="hand-picker"></ul>
+            </div>
+
+            <div class="picker">
+              <div class="picker-head">
+                <h3 id="object-picker">Object</h3>
+                <p>each grasped by <span data-hand-name>Allegro</span></p>
+              </div>
+              <ul class="strip" data-object-strip aria-labelledby="object-picker"></ul>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="citation">
-        <div class="section-inner">
+      <section id="resources" aria-labelledby="resources-title">
+        <div class="wrap">
           <div class="section-head">
+            <p class="label">Resources</p>
             <div>
-              <p class="kicker">Citation</p>
-              <h2>Cite EAGG.</h2>
+              <h2 id="resources-title">Paper, code, and checkpoints.</h2>
             </div>
-            <p class="section-note">
-              Use the BibTeX entry below if this work is helpful for your research.
-            </p>
           </div>
-          <div class="citation-panel">
-            <h3>BibTeX</h3>
-            <pre>@misc{niu2026eagg,
-  title = {EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning},
-  author = {Niu, Wanhao and Ke, Qiyan and Sun, Yuan and Sun, Hao and Xu, Jie and Ma, Muyuan and Hu, Ruiqi and Sun, Fuchun},
-  year = {2026},
-  eprint = {2606.18092},
+          <ul class="resources">
+            <li>
+              <a class="resource" href="https://arxiv.org/abs/2606.18092">
+                <span class="resource-top">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                  <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+                </span>
+                <strong>Paper</strong>
+                <span>arXiv:2606.18092</span>
+              </a>
+            </li>
+            <li>
+              <a class="resource" href="https://github.com/wanhaoniu/EAGG">
+                <span class="resource-top">
+                  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                  <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+                </span>
+                <strong>Code</strong>
+                <span>Inference, training, visualization tools, and hand/gripper assets.</span>
+              </a>
+            </li>
+            <li>
+              <a class="resource" href="https://drive.google.com/file/d/1P833ueGaeY1Gt66MdIVSgP0xxKxHFgG8/view?usp=sharing">
+                <span class="resource-top">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></svg>
+                  <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+                </span>
+                <strong>Checkpoints</strong>
+                <span>Final and per-gripper model weights.</span>
+              </a>
+            </li>
+            <li>
+              <a class="resource" href="https://irvlutd.github.io/MultiGripperGrasp/">
+                <span class="resource-top">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="2.5"/><path d="M4 5.5v13c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-13M4 12c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5"/></svg>
+                  <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+                </span>
+                <strong>MGG dataset</strong>
+                <span>MultiGripperGrasp, the training data format.</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="citation" aria-labelledby="citation-title">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="label">Citation</p>
+            <div>
+              <h2 id="citation-title">Cite EAGG.</h2>
+              <p class="lead">If this work is useful in your research, please cite the paper.</p>
+            </div>
+          </div>
+          <div class="bibtex">
+            <button class="btn btn-sm copy" type="button" data-copy>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+              <span data-copy-label>Copy</span>
+            </button>
+            <pre data-bibtex>@misc{niu2026eagg,
+  title         = {EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning},
+  author        = {Niu, Wanhao and Ke, Qiyan and Sun, Yuan and Sun, Hao and Xu, Jie and Ma, Muyuan and Hu, Ruiqi and Sun, Fuchun},
+  year          = {2026},
+  eprint        = {2606.18092},
   archivePrefix = {arXiv},
-  primaryClass = {cs.RO},
-  doi = {10.48550/arXiv.2606.18092},
-  url = {https://arxiv.org/abs/2606.18092}
+  primaryClass  = {cs.RO},
+  doi           = {10.48550/arXiv.2606.18092},
+  url           = {https://arxiv.org/abs/2606.18092}
 }</pre>
           </div>
         </div>
@@ -923,72 +1912,53 @@
     </main>
 
     <footer>
-      EAGG: Embodiment-Aligned Grasp Generation via Geometry-Aware Graph Conditioning.
+      <div class="wrap footer-inner">
+        <span>EAGG · Niu et al., 2026</span>
+        <nav aria-label="Footer">
+          <a href="https://arxiv.org/abs/2606.18092">arXiv</a>
+          <a href="https://github.com/wanhaoniu/EAGG">GitHub</a>
+          <a href="#top">Back to top</a>
+        </nav>
+      </div>
     </footer>
 
+    <dialog class="lightbox" data-lightbox aria-label="Enlarged figure">
+      <button class="lightbox-close" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <img alt="">
+    </dialog>
+
     <script>
-      const canvas = document.querySelector("[data-ripple-canvas]");
-      const context = canvas ? canvas.getContext("2d") : null;
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Top bar border once the page scrolls, and highlight the section in view.
+      const topbar = document.querySelector("[data-topbar]");
+      const onScroll = () => topbar.classList.toggle("is-scrolled", window.scrollY > 8);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
 
-      function resizeCanvas() {
-        if (!canvas || !context) return;
-        const scale = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.floor(window.innerWidth * scale);
-        canvas.height = Math.floor(window.innerHeight * scale);
-        canvas.style.width = `${window.innerWidth}px`;
-        canvas.style.height = `${window.innerHeight}px`;
-        context.setTransform(scale, 0, 0, scale, 0, 0);
+      const navLinks = [...document.querySelectorAll(".nav-links a")];
+      if ("IntersectionObserver" in window) {
+        const spy = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              navLinks.forEach((link) => {
+                if (link.hash === `#${entry.target.id}`) link.setAttribute("aria-current", "true");
+                else link.removeAttribute("aria-current");
+              });
+            });
+          },
+          { rootMargin: "-40% 0px -55% 0px" }
+        );
+        navLinks.forEach((link) => {
+          const target = document.querySelector(link.hash);
+          if (target) spy.observe(target);
+        });
       }
 
-      function drawRipple(time = 0) {
-        if (!canvas || !context) return;
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        context.clearRect(0, 0, width, height);
-        context.lineWidth = 1.2;
-
-        const centerY = height * 0.48;
-        for (let i = 0; i < 18; i += 1) {
-          const progress = i / 17;
-          const y = centerY + (progress - 0.5) * height * 0.72;
-          const wave = reduceMotion ? 0 : Math.sin(time * 0.00045 + i * 0.72) * 18;
-
-          const blueAlpha = 0.17 - progress * 0.06;
-          context.strokeStyle = `rgba(21, 146, 209, ${blueAlpha})`;
-          context.beginPath();
-          context.moveTo(-40, y + wave);
-          context.bezierCurveTo(width * 0.24, y - 84 + wave, width * 0.42, y + 68 - wave, width * 0.53, centerY + wave * 0.34);
-          context.stroke();
-
-          const redAlpha = 0.16 - progress * 0.055;
-          context.strokeStyle = `rgba(214, 76, 85, ${redAlpha})`;
-          context.beginPath();
-          context.moveTo(width + 40, y - wave);
-          context.bezierCurveTo(width * 0.76, y - 78 - wave, width * 0.58, y + 62 + wave, width * 0.48, centerY - wave * 0.28);
-          context.stroke();
-        }
-
-        const glow = context.createRadialGradient(width * 0.5, centerY, 0, width * 0.5, centerY, Math.max(width, height) * 0.48);
-        glow.addColorStop(0, "rgba(255, 255, 255, 0.58)");
-        glow.addColorStop(0.36, "rgba(255, 255, 255, 0.08)");
-        glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-        context.fillStyle = glow;
-        context.fillRect(0, 0, width, height);
-
-        if (!reduceMotion) requestAnimationFrame(drawRipple);
-      }
-
-      resizeCanvas();
-      drawRipple();
-      window.addEventListener("resize", () => {
-        resizeCanvas();
-        if (reduceMotion) drawRipple();
-      });
-
+      // Load the video only when asked, to keep the first page load light.
       const videoShell = document.querySelector("[data-video-shell]");
       const videoLoader = document.querySelector("[data-video-loader]");
-
       if (videoShell && videoLoader) {
         videoLoader.addEventListener("click", () => {
           const video = document.createElement("video");
@@ -1005,6 +1975,142 @@
           video.play().catch(() => {});
         });
       }
+
+      // Figure lightbox.
+      const lightbox = document.querySelector("[data-lightbox]");
+      const lightboxImg = lightbox.querySelector("img");
+      document.querySelectorAll("[data-zoom]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (typeof lightbox.showModal !== "function") {
+            window.open(button.dataset.zoom, "_blank");
+            return;
+          }
+          lightboxImg.src = button.dataset.zoom;
+          lightboxImg.alt = button.querySelector("img").alt;
+          lightbox.showModal();
+        });
+      });
+      lightbox.addEventListener("click", () => lightbox.close());
+
+      // Copy BibTeX.
+      const copyButton = document.querySelector("[data-copy]");
+      const copyLabel = document.querySelector("[data-copy-label]");
+      const bibtex = document.querySelector("[data-bibtex]");
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(bibtex.textContent);
+          copyLabel.textContent = "Copied";
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(bibtex);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          copyLabel.textContent = "Selected";
+        }
+        setTimeout(() => (copyLabel.textContent = "Copy"), 1800);
+      });
+
+      // Grasp explorer: top-3 renders per (end effector, object) pair.
+      const HANDS = [
+        ["wsg_50", "WSG-50"],
+        ["franka_panda", "Franka Panda"],
+        ["sawyer", "Sawyer"],
+        ["robotiq_3finger", "Robotiq 3F"],
+        ["Barrett", "Barrett"],
+        ["jaco_robot", "Jaco"],
+        ["Allegro", "Allegro"],
+        ["AbilityHand", "AbilityHand"],
+        ["DexHand", "DexHand"],
+        ["FreedomHand", "FreedomHand"],
+        ["HumanHand", "HumanHand"],
+      ];
+      const OBJECTS = [
+        ["003_cracker_box", "Cracker box"],
+        ["004_sugar_box", "Sugar box"],
+        ["005_tomato_soup_can", "Soup can"],
+        ["006_mustard_bottle", "Mustard bottle"],
+        ["011_banana", "Banana"],
+        ["024_bowl", "Bowl"],
+        ["025_mug", "Mug"],
+      ];
+      const render = (hand, object, rank) => `assets/explorer/${hand}/${object}_${rank}.webp`;
+      const label = (list, key) => list.find(([k]) => k === key)[1];
+
+      const explorer = document.querySelector("[data-explorer]");
+      const state = { hand: "Allegro", object: "025_mug" };
+
+      function setImage(img, src, alt) {
+        if (img.getAttribute("src") === src) return;
+        img.classList.add("is-loading");
+        img.onload = img.onerror = () => img.classList.remove("is-loading");
+        img.src = src;
+        img.alt = alt;
+      }
+
+      function buildStrip(container, list, kind) {
+        list.forEach(([key, name]) => {
+          const item = document.createElement("li");
+          item.innerHTML = `
+            <button class="tile" type="button" aria-pressed="false">
+              <span class="tile-img"><img width="360" height="360" alt="" loading="lazy"></span>
+              <span class="tile-name"></span>
+            </button>`;
+          const button = item.querySelector("button");
+          button.dataset.key = key;
+          button.title = name;
+          item.querySelector(".tile-name").textContent = name;
+          button.addEventListener("click", () => {
+            state[kind] = key;
+            update();
+          });
+          container.appendChild(item);
+        });
+      }
+
+      function keepInView(strip, smooth) {
+        const active = strip.querySelector('[aria-pressed="true"]');
+        if (!active || strip.scrollWidth <= strip.clientWidth) return;
+        const item = active.parentElement;
+        const left = item.offsetLeft - (strip.clientWidth - item.offsetWidth) / 2;
+        strip.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
+      }
+
+      function update(smooth = true) {
+        const handName = label(HANDS, state.hand);
+        const objectName = label(OBJECTS, state.object);
+        explorer.querySelectorAll("[data-hand-name]").forEach((el) => (el.textContent = handName));
+        explorer.querySelectorAll("[data-object-name]").forEach((el) => (el.textContent = objectName));
+        explorer.querySelectorAll("[data-object-name-lower]").forEach((el) => (el.textContent = objectName.toLowerCase()));
+
+        stage.querySelectorAll("img").forEach((img, i) => {
+          setImage(img, render(state.hand, state.object, i + 1), `${handName} grasping the ${objectName.toLowerCase()}, rank ${i + 1}`);
+        });
+
+        handStrip.querySelectorAll(".tile").forEach((tile) => {
+          const key = tile.dataset.key;
+          tile.setAttribute("aria-pressed", String(key === state.hand));
+          tile.setAttribute("aria-label", `${label(HANDS, key)} grasping the ${objectName.toLowerCase()}`);
+          setImage(tile.querySelector("img"), render(key, state.object, 1), "");
+        });
+
+        objectStrip.querySelectorAll(".tile").forEach((tile) => {
+          const key = tile.dataset.key;
+          tile.setAttribute("aria-pressed", String(key === state.object));
+          tile.setAttribute("aria-label", `${handName} grasping the ${label(OBJECTS, key).toLowerCase()}`);
+          setImage(tile.querySelector("img"), render(state.hand, key, 1), "");
+        });
+
+        keepInView(handStrip, smooth);
+        keepInView(objectStrip, smooth);
+      }
+
+      const stage = explorer.querySelector("[data-stage]");
+      const handStrip = explorer.querySelector("[data-hand-strip]");
+      const objectStrip = explorer.querySelector("[data-object-strip]");
+      buildStrip(handStrip, HANDS, "hand");
+      buildStrip(objectStrip, OBJECTS, "object");
+      update(false);
     </script>
   </body>
 </html>
